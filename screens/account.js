@@ -172,7 +172,7 @@ export default class Account extends Component {
                               
                                
                                 <Button success style={{ position: 'absolute', top: 2, right: 20, bottom: 10}} onPress={() => this.props.navigation.navigate('ListAccount')}>
-                                    <Text>Add Button</Text>
+                                    <Text>View User</Text>
                                 </Button>
                             
                             </View>  

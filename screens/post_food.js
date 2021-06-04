@@ -17,7 +17,7 @@ import {
     Thumbnail,
     Text,
     Icon,
-    
+    Picker,
     DatePicker,
     Footer,
     FooterTab,
@@ -89,7 +89,13 @@ export default class PostFood extends Component {
             isLoading: false,
             uploading: false,
             DateDisplay:'',
-            visibility: false
+            visibility: false,
+           metric: [
+                { gram: 'Kilogram', id: 1 },
+                { gram: 'Gram', id: 2 },
+                { gram: 'Miligram', id: 3 },
+            ],
+              selected1: 1
             //modalVisible: false
         };
         this.setDate_Start = this.setDate_Start.bind(this);
@@ -106,6 +112,13 @@ export default class PostFood extends Component {
         // this.setState({ userid: user })
 
     }
+
+    onMetricSelected(value) {
+        this.setState({
+          selectedMetric: value
+        });
+      }
+
     componentDidMount() {
         //get data first
         var user = auth.currentUser;
@@ -470,7 +483,7 @@ export default class PostFood extends Component {
                              <Text>{this.state.quantity}</Text>
                         </Item> 
                         <Item style={{marginTop: 30, marginBottom:10, marginLeft:2, marginRight:10}}  >  
-                        <Button style={{ borderRadius: 40, marginRight: 10, elevation: 12 }} onPress={this.showActionSheet}>
+{/*                         <Button style={{ borderRadius: 40, marginRight: 10, elevation: 12 }} onPress={this.showActionSheet}>
                                 <ActionSheet
                                     ref={o => this.ActionSheet = o}
                                     title={<Text style={{ color: '#000', fontSize: 18 }}>Which one do you like?</Text>}
@@ -480,11 +493,31 @@ export default class PostFood extends Component {
                                     selectedValue={this.state.quantity}
                                     value={this.state.quantity}
                                     onPress={this.handlePressQuantity}
-                                    //onPress={(index) => { /* do something */ }}
+                                    
                                 />
                                 <Text style={{ fontWeight: "bold", fontSize: 10, padding: 10 }}>Choose Metric</Text>
 
-                            </Button>
+                            </Button> */}
+                            <Form>
+                        <Picker
+                            style={{ width: 200, height: 40 }}
+                            iosHeader="Branch"
+                            Header="Metric"
+                            mode="dropdown"
+                            textStyle={{ color: 'grey' }}
+                            placeholder='Select Metric'
+                            headerBackButtonText='Geri'
+                            selectedValue={this.state.selectedMetric}
+                            onValueChange={(value) => this.onMetricSelected(value)}
+                            >
+                            {this.state.metric.map((metric, i) => {
+                                return (
+                                <Picker.Item label={metric.gram} value={metric.id} key={i} />
+                                );
+                            }
+                            )}
+                            </Picker>
+                        </Form>
                             
                         </Item>  
 

@@ -9,6 +9,7 @@ import PostFood from './screens/post_food';
 import { Ionicons } from '@expo/vector-icons';
 import BuyingPlan from './screens/buying_plan';
 import Account from './screens/account';
+import MyLocation from './location/location';
 
 
 export default function Home() {
@@ -52,7 +53,8 @@ export default function Home() {
           inactiveTintColor: 'gray',
         }}>
           <Tab.Screen name="Feed" component={Feed} /> 
-          <Tab.Screen name="PostFood" component={PostFood} />
+          <Tab.Screen name="MyLocation" component={MyLocation} />
+          {/* <Tab.Screen name="PostFood" component={PostFood} /> */}
           <Tab.Screen name="BuyingPlan" component={BuyingPlan} />
           <Tab.Screen name="Account" component={Account} />
         </Tab.Navigator>
