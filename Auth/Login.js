@@ -19,13 +19,6 @@ export default class Login extends Component {
        password: ''
    })
 
-/*    auth.onAuthStateChanged(function(user){
-      if(user){
-        console.log("Logged in", user);
-      }else{
-        console.log("Logged Out");
-      }
-   }); */
 
   }
 

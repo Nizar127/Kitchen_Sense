@@ -3,14 +3,20 @@ import { Dimensions, View, Text, StyleSheet, Image,Alert,  g, ActivityIndicator,
 import {Root, Container, Content, Header, Form, Label, Input, Icon, Item, Button, Textarea} from 'native-base';
 //import Icon from '@expo/vector-icons/Ionicons';
 import {auth, firestore, db, storage} from '../config/Firebase';
+import {useRoute} from '@react-navigation/native';
 //import * as Font from 'expo-font';
 /* import ImagePicker from 'react-native-image-crop-picker';*/
 import * as ImagePicker from 'expo-image-picker';
 import uuid from 'react-native-uuid';
 
+export default function(props) {
+  const route = useRoute();
+
+  return <SignUp {...props} route={route} />;
+}
 
 
-export default class SignUp extends Component {
+class SignUp extends Component {
   
     constructor() {
         super();
@@ -22,7 +28,7 @@ export default class SignUp extends Component {
             fullname:'',
             phoneNum:'',
             employee: false,
-            address: '',
+            address: this.props.address,
             url: null,
             address: '',
             description:'',
@@ -204,8 +210,8 @@ saveData = async() => {
 
 
   render() {
-    let { url } = this.state;
-
+    //let { url } = this.state;
+    const {route} = this.props;
     return (
       <Container>
           <Content padder>
@@ -257,15 +263,22 @@ saveData = async() => {
             <Item fixedLabel last>
                  <Textarea rowSpan={5} style={styles.startRouteBtn} onChangeText={this.setDescription} />
             </Item>
-
+ 
+          <View style={{ flex: 1,flexDirection:'column'}}>
+             
             <Item style={styles.inputGroup} fixedLabel last>
                <Label>Address</Label>
-               
+               {/* <Textarea rowSpan={5} style={styles.startRouteBtn} placeholder="Please Click The Button Below To" onChangeText={(address) => this.setState({ address: address })} > */}
+              <View><Text onChangeText={(address)=>this.setState({address}) }>{route.params.userAddress}</Text></View> 
+                         
+                
             </Item>
+            <Button success style={{ position: 'absolute', top: 2, right: 20, bottom: 10}} onPress={() => this.props.navigation.navigate('UserStartLocation')}>
+                                    <Text>Check Location</Text>
+                                </Button>
+          </View>
+      
 
-            <Item fixedLabel last>
-                 <Textarea rowSpan={5} style={styles.startRouteBtn} onChangeText={this.setAddress} />
-            </Item>
 
 
            <Item style={styles.inputGroup} fixedLabel last>

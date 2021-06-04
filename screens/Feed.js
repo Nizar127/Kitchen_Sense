@@ -35,15 +35,16 @@ import { useRoute } from '@react-navigation/native';
 import MyLocation from '../location/location';
 //import Location from 'Location';
 
-
-export default class Feed extends Component {
+export default function(props) {
+    const route = useRoute();
+  
+    return <Feed {...props} route={route} />;
+  }
+  
+ class Feed extends Component {
 
     constructor() {
         super();
-        //this.applicationRef = firestore.collection('Hiring').where('jobCreatorID', '==', auth.currentUser.uid);
-        //this.applicationRef = firestore().collection('Hiring');/* .doc(auth().currentUser.uid).get().where('jobCreatorID', '==', auth().currentUser.uid); */
-        //this.hiringRef = firestore.collection('Job_Hired');
-
         this.state = {
             hire: [],
             isLoading: true,
@@ -99,12 +100,7 @@ export default class Feed extends Component {
         return documentSnapshot.get('jobCreatorID')
     }
 
-    //componentDidMount() {
-        //this.unsubscribe = this.applicationRef.onSnapshot(this.getCollection);
-        //let DataRef = firestore().collection('Hiring').doc(auth().currentUser.uid).get().then(documentSnapshot => this.getDataOfJob(documentSnapshot));
 
-
-    //}
     componentDidMount() {
      // const { item } = this.props.route.params.item;
       }
@@ -278,15 +274,17 @@ export default class Feed extends Component {
     }
 
     render() {
+
+        const {route} = this.props;
         return (
             <Container>
 
                 <Content >
                     <Text style={{ textAlign: "center", height: 40, fontWeight: "bold", marginTop: 20 }}>List of Household Product</Text>
 
-                    <View style={{flex:1, flexDirection: 'row'}}>
+                    <View style={{flex:1, flexDirection: 'column'}}>
                             
-                            <AddressText/>
+                        <View><Text>{route.params.item}</Text></View>
                             
                         <View style={{ flex: 1, marginStart: 10, marginBottom: 40 }}>
                               
