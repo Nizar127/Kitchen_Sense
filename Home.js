@@ -9,11 +9,20 @@ import PostFood from './screens/post_food';
 import { Ionicons } from '@expo/vector-icons';
 import BuyingPlan from './screens/buying_plan';
 import Account from './screens/account';
-
+import MyLocation from './location/location';
+import { useRoute } from '@react-navigation/native';
 
 export default function Home() {
-    return (
-     
+  //const route = useRoute();
+
+ 
+  return (
+      <View style={{ flex: 1 }}>
+        
+        {/*   <View>
+               <Text style={{fontSize: 20}}>{route.params.item}</Text>
+          </View> */}
+  
         <Tab.Navigator
         screenOptions={({ route }) => ({
           tabBarIcon: ({  color, size }) => {
@@ -28,20 +37,20 @@ export default function Home() {
             } else if (route.name === 'PostJob') {
               return (
                 <Ionicons
-                  name={'md-add'}
+                  name={'md-add-outline'}
                   size={size}
                   color={color}
                 />
               );
-            } else if (route.name === 'EmployerProfile'){
+            } else if (route.name === 'BuyingPlan'){
               <Ionicons
-                  name={'md-albums'}
+                  name={'md-basket-outline'}
                   size={size}
                   color={color}
                 />
-            } else if (route.name === 'BuyingPlan'){
+            } else if (route.name === 'Account'){
               <Ionicons
-                name={'basket-outline'}
+                name={'md-person'}
                 size={size}
                 color={color}/>
             }
@@ -52,10 +61,12 @@ export default function Home() {
           inactiveTintColor: 'gray',
         }}>
           <Tab.Screen name="Feed" component={Feed} /> 
-          <Tab.Screen name="PostFood" component={PostFood} />
+          {/* <Tab.Screen name="PostFood" component={PostFood} /> */}
           <Tab.Screen name="BuyingPlan" component={BuyingPlan} />
           <Tab.Screen name="Account" component={Account} />
         </Tab.Navigator>
+
+        </View>
      
     );
   }

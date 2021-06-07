@@ -17,7 +17,7 @@ import {
     Thumbnail,
     Text,
     Icon,
-    
+    Picker,
     DatePicker,
     Footer,
     FooterTab,
@@ -29,18 +29,6 @@ import * as ImagePicker from 'expo-image-picker';
 import uuid from 'react-native-uuid';
 import ActionSheet from 'react-native-actionsheet'
 import DateTimePickerModal from "react-native-modal-datetime-picker";
-
-
-const dataArray = [
-    { title: "Personal Bio", content: "Smart, Simple, Hardworking and Easy to adapt" },
-    { title: "Skills", content: "Programming, Engineering, Mechanical, Design" },
-    { title: "Experience", content: "Working with Creative World, Worked With Brandpacker Solution" },
-    { title: "Personal Projects", content: "Develop app for ESports, Develop personal e-wallet app" },
-    { title: "Education Background", content: "UITM, UIAM, Oracle Academy" },
-    { title: "Interest", content: "Love to coding, loves science" },
-    { title: "Achievement", content: "3 times Deans's list award" }
-];
-
 
 
 const quantity = [
@@ -73,23 +61,25 @@ export default class PostFood extends Component {
         this.state = {
             currentUser: null,
             userID: null,
-            jobname: '',
             email:'',
+            name:'',
             uniqueId: '',
-            jobdesc: '',
             url: '',
-            worktype: '',
-            salary: '',
-            peoplenum: '',    
-            qualification:'',
+            ingredientDesc:'',
             ingredientname:'',
             quantity:'',
             alert:'',
-            experience:'',
             isLoading: false,
             uploading: false,
             DateDisplay:'',
-            visibility: false
+            visibility: false,
+            switchValue: '',
+           metric: [
+                { gram: 'Kilogram', id: 1 },
+                { gram: 'Gram', id: 2 },
+                { gram: 'Miligram', id: 3 },
+            ],
+              selected1: 1
             //modalVisible: false
         };
         this.setDate_Start = this.setDate_Start.bind(this);
@@ -106,6 +96,13 @@ export default class PostFood extends Component {
         // this.setState({ userid: user })
 
     }
+
+    onMetricSelected(value) {
+        this.setState({
+          selectedMetric: value
+        });
+      }
+
     componentDidMount() {
         //get data first
         var user = auth.currentUser;
@@ -143,17 +140,6 @@ export default class PostFood extends Component {
         this.ActionSheet.show()
     }
 
-/*     handlePressquantity = buttonIndex => {
-        this.setState({
-          selected: buttonIndex,
-          quantity: quantity[buttonIndex]
-          
-        });
-        console.log('actionsheet:',buttonIndex);
-
-      }; */
-      
-
       handlePressalert = buttonIndex => {
         this.setState({
           selected: buttonIndex,
@@ -183,6 +169,10 @@ export default class PostFood extends Component {
         }).start();
     };
 
+
+    setName = (value) =>{
+        this.setState({name: value});
+    }
 
     setUserID = (value) => {
         this.setState({ userID: value });
@@ -224,18 +214,9 @@ export default class PostFood extends Component {
         this.setState({ uniqueId: value })
     }
 
-    setJobDesc = (value) => {
-        this.setState({ jobdesc: value })
+    setIngredientDesc = (value) => {
+        this.setState({ ingredientDesc: value })
         //console.log('job desc:',value);
-    }
-
-
-    setSalary = (value) => {
-        this.setState({ salary: value })
-    }
-
-    setPeopleNum = (value) => {
-        this.setState({ peoplenum: value })
     }
 
     setDate_Start(newDate) {
@@ -344,8 +325,8 @@ export default class PostFood extends Component {
 
     saveData = async() => {
         console.log("state", this.state)
-        if (this.state.userID && this.state.worktype && this.state.qualification && this.state.experience && this.state.email&& this.state.jobname && this.state.uniqueId && this.state.jobdesc && this.state.salary && this.state.peoplenum  && this.state.url) {
-            if (isNaN(this.state.salary && this.state.peoplenum)) {
+        if (this.state.userID && this.state.ingredientname && this.state.ingredientDesc && this.state.DateDisplay && this.state.switchValue && this.state.quantity && this.state.alert && this.state.url) {
+            if (isNaN(this.state.quantity)) {
                 Alert.alert('Status', 'Invalid Figure!');
             }
             else {
@@ -353,32 +334,33 @@ export default class PostFood extends Component {
                     
                     this.dbRef.add({
                         uid: auth.currentUser.uid,
-                        jobCreatorname: this.state.email,
-                        jobname: this.state.jobname,
-                        uniqueId: this.state.uniqueId,
-                        jobdesc: this.state.jobdesc,
-                        salary: this.state.salary,
+                        ingredientname: this.state.ingredientname,
+                        ingredientDesc: this.state.ingredientDesc,
+                        quantity: this.state.quantity,
+                        qtyMetric: this.state.selected1,
+                        date_bought: this.state.DateDisplay,
+                        ExpiryReceived: this.state.switchValue,
+                        alert: this.state.alert,
                         url: this.state.url,
-                        worktype: this.state.worktype,
-                        experience: this.state.experience,
-                        qualification: this.state.qualification,
-                        peoplenum: this.state.peoplenum,
+
                         
                     }).then((res) => {
                         console.log("[saveData] Done add to firebase", res);
 
                         this.setState({
-                            jobname: '',
-                            uniqueId: '',
-                            jobdesc: '',
-                            salary: '',
+                            ingredientname: '',
+                            ingredientDesc: '',
+                            quantity: '',
+                            qtyMetric: '',
+                            date_bought:'',
+                            ExpiryReceived:'',
                             url: '',
-                            peoplenum: '',
-                            time: 0,
+                            alert:'',
+                            url:''
                         
                         })
                     });
-                    Alert.alert('Your Job Has Been Posted', 'Please Choose',
+                    Alert.alert('New Ingredient Has Been Posted', 'Please Choose',
                         [
                             {
                                 text: "Return To Main Screen",
@@ -393,6 +375,7 @@ export default class PostFood extends Component {
            // })
         }
         } else {
+            console.log("Alert", this.state)
             Alert.alert('Status', 'Empty Field(s)!');
         }
     }
@@ -414,6 +397,13 @@ export default class PostFood extends Component {
                     <Item style={styles.inputGroup} fixedLabel last>
                             <Label>Name</Label>
                             <Input style={styles.startRouteBtn} onChangeText={this.setIngredientName} />
+                    </Item>
+
+                    <View style={styles.inputGroup} fixedLabel last>
+                            <Label>Job Description</Label>
+                        </View>
+                        <Item>
+                            <Textarea rowSpan={5} colSpan={5} onChangeText={this.setIngredientDesc} bordered style={styles.startTextBtn} placeholder="Tell something about the job Here" />
                         </Item>
 
                  <Item style={styles.inputGroup} fixedLabel last onPress={this.onPressButtonClick}>
@@ -459,32 +449,34 @@ export default class PostFood extends Component {
                             {this._maybeRenderUploadingOverlay()}
 
 
-                        <Item style={styles.inputGroup} fixedLabel last>
-                            <Label>Number of People</Label>
-                            <Input keyboardType="numeric" style={styles.startRouteBtn} onChangeText={this.setPeopleNum} />
-                        </Item>
-
+    
                         <Item>
                              <Label>Quantity</Label>
                              <Input keyboardType="numeric" style={styles.startRouteBtn} onChangeText={this.setPeopleNum} />
                              <Text>{this.state.quantity}</Text>
                         </Item> 
                         <Item style={{marginTop: 30, marginBottom:10, marginLeft:2, marginRight:10}}  >  
-                        <Button style={{ borderRadius: 40, marginRight: 10, elevation: 12 }} onPress={this.showActionSheet}>
-                                <ActionSheet
-                                    ref={o => this.ActionSheet = o}
-                                    title={<Text style={{ color: '#000', fontSize: 18 }}>Which one do you like?</Text>}
-                                    options={quantity}
-                                    cancelButtonIndex={0}
-                                    destructiveButtonIndex={6}
-                                    selectedValue={this.state.quantity}
-                                    value={this.state.quantity}
-                                    onPress={this.handlePressQuantity}
-                                    //onPress={(index) => { /* do something */ }}
-                                />
-                                <Text style={{ fontWeight: "bold", fontSize: 10, padding: 10 }}>Choose Metric</Text>
 
-                            </Button>
+                    <Form>
+                        <Picker
+                            style={{ width: 200, height: 40 }}
+                            iosHeader="Branch"
+                            Header="Metric"
+                            mode="dropdown"
+                            textStyle={{ color: 'grey' }}
+                            placeholder='Select Metric'
+                            headerBackButtonText='Geri'
+                            selectedValue={this.state.selectedMetric}
+                            onValueChange={(value) => this.onMetricSelected(value)}
+                            >
+                            {this.state.metric.map((metric, i) => {
+                                return (
+                                <Picker.Item label={metric.gram} value={metric.id} key={i} />
+                                );
+                            }
+                            )}
+                            </Picker>
+                    </Form>
                             
                         </Item>  
 

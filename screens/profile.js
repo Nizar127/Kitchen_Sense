@@ -179,34 +179,13 @@ export default class Profile extends Component {
         this.setState({ myText: value })
     }
 
-
-
-    static navigationOptions = {
-        title: 'Profile',
-        tabBarIcon: ({ tintColor }) => (
-            <Icon name="md-person" style={{ color: tintColor }} />
-        ),
-        headerTitle: {
-            title: 'GET-THE-JOB'
-        },
-        headerStyle: {
-            backgroundColor: '#f45fff',
-        },
-        headerTintColor: '#fff',
-        headerTitleStyle: {
-            fontWeight: 'bold',
-        },
-    }
-
-
-
     render() {
         return (
             <View style={{ flex: 1 }}>
                 <ScrollView>
                     <Card>
                         <CardItem cardBody>
-                            <Image source={{ uri: this.state.url ? this.state.url : auth.currentUser.photoURL }} style={{ height: 200, width: null, flex: 1 }} />
+                            <Image source={{ uri: this.state.url  }} style={{ height: 200, width: null, flex: 1 }} />
 
                         </CardItem>
                         <CardItem>

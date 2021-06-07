@@ -22,22 +22,29 @@ import {
     Button,
     DatePicker,
     Picker,
-    Textarea
+    Textarea,
+    Form
 } from 'native-base';
+//import {Picker} from '@react-native-picker/picker';
 import Icon from 'react-native-vector-icons/Ionicons'
 import { ScrollView } from 'react-native-gesture-handler';
 import {auth, firestore, storage} from '../config/Firebase';
+import AddressText from '../location/location';
 import { KeyboardAvoidingViewBase } from 'react-native';
+import { useRoute } from '@react-navigation/native';
+import MyLocation from '../location/location';
+//import Location from 'Location';
 
-
-export default class Feed extends Component {
+/* export default function(props) {
+    const route = useRoute();
+  
+    return <Feed {...props} route={route} />;
+  } */
+  
+ export default class Feed extends Component {
 
     constructor() {
         super();
-        //this.applicationRef = firestore.collection('Hiring').where('jobCreatorID', '==', auth.currentUser.uid);
-        //this.applicationRef = firestore().collection('Hiring');/* .doc(auth().currentUser.uid).get().where('jobCreatorID', '==', auth().currentUser.uid); */
-        //this.hiringRef = firestore.collection('Job_Hired');
-
         this.state = {
             hire: [],
             isLoading: true,
@@ -67,35 +74,44 @@ export default class Feed extends Component {
             time: '',
             worktime: '',
             fabActive:false,
-            //selectedHours: 0,
-            //selectedMinutes: 0,
-            //chosenDate: new Date(),
-            //date_start: new Date().toString().substr(4, 12),
-            //date_end: new Date().toString().substr(4, 12)
+            selected: "key1",
+
+            
         };
-       // this.selectWorkTime = this.selectWorkTime.bind(this);
-        //this.setDate_Start = this.setDate_Start.bind(this);
-        //this.setDate_End = this.setDate_End.bind(this);
+
 
     }
 
+    
+    onBranchSelected(value) {
+        this.setState({
+          selectedBranch: value
+        });
+      }
+    open = () => {
+        pickerRef.current.focus();
+      }
+      
+        close =() => {
+        pickerRef.current.blur();
+      }
 
     getDataOfJob = (documentSnapshot) => {
         return documentSnapshot.get('jobCreatorID')
     }
 
+
     componentDidMount() {
-        //this.unsubscribe = this.applicationRef.onSnapshot(this.getCollection);
-        //let DataRef = firestore().collection('Hiring').doc(auth().currentUser.uid).get().then(documentSnapshot => this.getDataOfJob(documentSnapshot));
-
-
-    }
-
+     // const { item } = this.props.route.params.item;
+      }
+    
+    
 
     componentWillUnmount() {
        // this.unsubscribe();
     }
 
+   
     getCollection = (querySnapshot) => {
         const hire = [];
         querySnapshot.forEach((res) => {
@@ -153,10 +169,20 @@ export default class Feed extends Component {
     }
 
 
+    onValueChange =(value) =>{
+        this.setState({
+          selected: value
+        });
+      }
+
     setTask = (value) => {
         this.setState({ ...this.state, task: value })
     }
 
+
+    setSelectedCategory = (value) =>{
+        this.setState({selectedCategory: value})
+    }
 
     static navigationOptions = {
         title: 'Hire',
@@ -249,11 +275,29 @@ export default class Feed extends Component {
 
     render() {
 
+        //const {route} = this.props;
         return (
             <Container>
 
                 <Content >
-                    <Text style={{ textAlign: "center", height: 40, fontWeight: "bold", marginTop: 20 }}>List of Ingredient</Text>
+                    <Text style={{ textAlign: "center", height: 40, fontWeight: "bold", marginTop: 20 }}>List of Household Product</Text>
+
+                    <View style={{flex:1, flexDirection: 'column'}}>
+                            
+                        {/* <View><Text>{route.params.item}</Text></View>  */}
+                            
+                        <View style={{ flex: 1, marginStart: 10, marginBottom: 40 }}>
+                              
+                               
+                               {/*  <Button success style={{ position: 'absolute', top: 2, right: 20, bottom: 10}} onPress={() => this.props.navigation.navigate('MyLocation')}>
+                                    <Text>Check Location</Text>
+                                </Button> */}
+                            
+                            </View>  
+                    </View>
+                    
+                            
+                        
                     <Modal
                         animationType={"slide"}
                         transparent={false}
@@ -292,27 +336,45 @@ export default class Feed extends Component {
                     </Modal>
                     <View style={{ flex: 1, /* backgroundColor: '#292D5C' */ shadowColor: 'white', backgroundColor: '#242836' }}>
                         <FlatList
-                            data={this.state.hire}
-
+                            data={this.state.hire}                              
                             contentContainerStyle={{ flexGrow: 1 }}
+                            numColumns={2}
                             renderItem={({ item, index }) => {
                                 return (
                                     <SafeAreaView>
                                         <ScrollView>
+                                            <View style={{ flex: 1, flexDirection: 'column'}}>
                                             <Card key={index} style={Style.card} >
                                                 <CardItem header bordered style={{ flexDirection: 'row' }}>
-                                                    <Text>{item.jobName}</Text>
+                                                    <Text>{item.ingredientname}</Text>
                                                     <Right>
                                                         <Button success onPress={() => { this.setState({ key: item.key }), this.displayModal(true) }}>
-
-                                                            <Text style={Style.buttonHireText}>Hire</Text>
+                                                             <Text style={Style.buttonHireText}>Hire</Text>
                                                         </Button>
                                                     </Right>
 
                                                 </CardItem>
                                                 <CardItem header>
-                                                    <Text>{item.job_seeker_name}</Text>
+                                                    <View style={{ flex: 1, flexDirection:'row'}}>
+                                                        <Text>{item.quantity}</Text>
+                                                        <Text>{item.qtyMetric}</Text>
+                                                    </View>
+                                                    
 
+                                                </CardItem>
+                                                <CardItem style={{flex: 1, flexDirection: 'column'}}>
+                                                    <Body>
+                                                        <Right>
+                                                            <Text>
+                                                                {item.date_bought}
+                                                            </Text>
+                                                        </Right>
+                                                    </Body>
+                                                    <Body>
+                                                        <Text>
+                                                            {item.alert}
+                                                        </Text>
+                                                    </Body>
                                                 </CardItem>
                                                 <CardItem bordered button onPress={() => {
                                                     this.props.navigation.navigate('JobCreatorDetail', {
@@ -321,10 +383,10 @@ export default class Feed extends Component {
                                                 }}>
                                                     <CardItem cardBody style={{ flexDirection: 'row' }}>
                                                         <Left>
-                                                            <Thumbnail large source={{ uri: item.job_seekerImage }} style={{ margin: 5 }} />
+                                                            <Thumbnail large source={{ uri: item.url }} style={{ margin: 5 }} />
                                                         </Left>
                                                         <Body>
-                                                        <Text style={{ paddingBottom: 7, margin: 10 }}>{item.jobDescription}</Text>
+                                                        <Text style={{ paddingBottom: 7, margin: 10 }}>{item.ingredientDesc}</Text>
                                                             <Text style={{ paddingBottom: 7 }}>Capability</Text>
                                                             <Text note style={{ padding: 3 }}>{item.ref_skills}</Text>
                                                             <Text style={{ padding: 3 }}>{item.ref_selfDescribe}</Text>
@@ -335,6 +397,8 @@ export default class Feed extends Component {
 
                                                 </CardItem>
                                             </Card>
+                                            </View>
+
                                         </ScrollView>
                                     </SafeAreaView>
                                 )
@@ -346,16 +410,16 @@ export default class Feed extends Component {
 
 
                 <Fab 
-                style={{ backgroundColor: '#031CDD', borderRadius: 50 }} 
+                style={{ backgroundColor: '#031CDD', borderRadius: 50, }} 
                 direction="up"
                 position="bottomRight"
                 onPress={() => this.setState({ active: !this.state.fabActive })}>
                 <Icon name="md-add-outline" />
-                     <Button style={{ backgroundColor: '#34A34F' }}  onPress={() => this.props.navigation.navigate('PostFood')}>
-                        <Icon name="md-add-outline" />
+                     <Button style={{ width:60, height: 50,  backgroundColor: '#34A34F' }}   onPress={() => this.props.navigation.navigate('PostFood')}>
+                        <Icon name="ios-add-circle-outline" style={{ color: '#ffffff', fontSize: 30}} />
                       </Button>
-                      <Button style={{ backgroundColor: '#3B5998' }} onPress={() => this.props.navigation.navigate('AddUser')}>
-                        <Icon name="bag-handle-outline" />
+                      <Button style={{ width:60, height: 50, backgroundColor: '#3B5998', marginBottom: 30, marginEnd: 30}} onPress={() => this.props.navigation.navigate('AddUser')}>
+                        <Icon name="person-add" style={{ color: '#ffffff', fontSize: 30}}/>
                       </Button>
                     
 

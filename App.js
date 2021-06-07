@@ -23,7 +23,10 @@ import MyOrderDetail from './screens/MyOrderDetail';
 import { useEffect } from 'react/cjs/react.development';
 import ListAccount from './screens/ListAccount';
 import AddUser from './screens/AddUser';
-
+import MyLocation from './location/location';
+import UserStartLocation from './location/userStartLocation';
+import AccountDetail from './screens/accountDetail';
+import AddUserLocation from './location/adduserlocation';
 
 
 
@@ -48,6 +51,11 @@ function App() {
         <Stack.Screen name="JobProgress" component={JobProgress}/> 
         <Stack.Screen name="ListAccount" component={ListAccount}/>
         <Stack.Screen name="AddUser" component={AddUser}/>
+        <Stack.Screen name="UserStartLocation" component={UserStartLocation}/>
+        <Stack.Screen name="MyLocation" component={MyLocation}/>
+        <Stack.Screen name="AccountDetail" component={AccountDetail}/>
+        <Stack.Screen name="AddUserLocation" component={AddUserLocation}/>
+
 
       </Stack.Navigator>
 

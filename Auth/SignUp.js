@@ -1,16 +1,22 @@
 import React, { Component } from 'react';
-import { Dimensions, View, Text, StyleSheet, Image,Alert,  g, ActivityIndicator,} from 'react-native';
+import { Dimensions, View, Text, StyleSheet, Image,Alert,  g, ActivityIndicator, ScrollView,} from 'react-native';
 import {Root, Container, Content, Header, Form, Label, Input, Icon, Item, Button, Textarea} from 'native-base';
 //import Icon from '@expo/vector-icons/Ionicons';
 import {auth, firestore, db, storage} from '../config/Firebase';
+import {useRoute} from '@react-navigation/native';
 //import * as Font from 'expo-font';
 /* import ImagePicker from 'react-native-image-crop-picker';*/
 import * as ImagePicker from 'expo-image-picker';
 import uuid from 'react-native-uuid';
+import * as Location from 'expo-location';
 
+export default function(props) {
+   const route = useRoute();
 
+   return <SignUp {...props} route={route} />;
+}
 
-export default class SignUp extends Component {
+class SignUp extends Component {
   
     constructor() {
         super();
@@ -24,10 +30,11 @@ export default class SignUp extends Component {
             employee: false,
             address: '',
             url: null,
-            address: '',
             description:'',
             uploading: false,
             isLoading: false,
+            locationServiceEnabled: false,
+            displayCurrentAddress: false
         };
       
         this.pickImage = this.pickImage.bind(this);
@@ -35,8 +42,10 @@ export default class SignUp extends Component {
 
         this.saveData = this.saveData.bind(this);
 
-
     }
+
+    //const item = useRoute();
+
 
     _maybeRenderUploadingOverlay = () => {
         if (this.state.uploading) {
@@ -159,7 +168,8 @@ setAddress = (value) => {
 
 saveData = async() => {
     console.log("state", this.state)
-    if (this.state.description && this.state.address && this.state.fullname && this.state.email && this.state.password  && this.state.phoneNum  && this.state.url) {
+    const {route} = this.props;
+    if (this.state.description && route.params.userAddress && this.state.fullname && this.state.email && this.state.password  && this.state.phoneNum  && this.state.url) {
         if (this.state.password.length < 6){
             Alert.alert('Status', 'Invalid Figure!');
             
@@ -171,7 +181,7 @@ saveData = async() => {
                     email: this.state.email,
                     fullname: this.state.fullname,
                     description: this.state.description,
-                    address: this.state.address,
+                    address: route.params.userAddress,
                     phoneNum: this.state.phoneNum,
                     url: this.state.url,
                 }).then((res) => {
@@ -188,7 +198,7 @@ saveData = async() => {
                     Alert.alert('Your Job Has Been Posted', 'Please Choose',
                     [
                         {
-                            text: "Thank You For Signin Up With Traffic (Employer). Please Sign In to proceed",
+                            text: "Thank You For Signin Up With Kitchen Sense. Please Sign In to proceed",
                             onPress: () => this.props.navigation.navigate('Login')
                         },
                     ], { cancelable: false }
@@ -203,11 +213,34 @@ saveData = async() => {
 }
 
 
-  render() {
-    let { url } = this.state;
 
+
+  render() {
+    //let { url } = this.state;
+    const {route} = this.props;
+
+    
     return (
-      <Container>
+      <Container> 
+        <ScrollView>
+        <Content>
+         
+            <View style={{margin: 20, padding: 5, flex: 1, flexDirection:'column'}}> 
+              <View>
+                <View style={{margin: 10, padding: 5, flex: 1, flexDirection:'column'}}>
+                   <Text style={{ textAlign: "center", height: 40, fontSize: 24,fontWeight: "bold", marginTop: 20 }}>Welcome To The Kitchen Sense</Text>
+                   <Text style={{ textAlign: "center", fontSize: 18, fontWeight: "bold", marginTop: 20 }}>Please Sign In Using Button Below</Text>
+                </View>
+
+              </View>
+              <View>
+                  <Text></Text>
+              </View>
+          <Button block primary last style={{ marginTop: 50, width: 180, justifyContent: 'center', alignItems: 'center'}} onPress={()=>this.props.navigation.navigate('Login')}>
+                        <Text style={{ fontWeight: "bold", color:'#fff' }}>LOGIN</Text>
+           </Button>
+            </View>
+        </Content>
           <Content padder>
                     <Text style={{ textAlign: "center", height: 40, fontWeight: "bold", marginTop: 20 }}>Sign Up System</Text>
       <Form>
@@ -238,8 +271,7 @@ saveData = async() => {
                       <Text style={{ textAlign: 'center', color: 'white', fontWeight: 'bold' }}>Pick From Library</Text>
                </Button>
                
-               <Button iconLef style={{ backgroundColor: '#2869F4', padding: 10, margin: 5 }}
-                                onPress={this._takePhoto}>
+               <Button iconLef style={{ backgroundColor: '#2869F4', padding: 10, margin: 5 }} onPress={this._takePhoto}>
                 <Icon name="md-camera" />
                       <Text style={{ textAlign: 'center', color: 'white', fontWeight: 'bold'}}>Take Photo</Text>
                </Button>
@@ -257,15 +289,24 @@ saveData = async() => {
             <Item fixedLabel last>
                  <Textarea rowSpan={5} style={styles.startRouteBtn} onChangeText={this.setDescription} />
             </Item>
-
+ 
+          <View style={{ flex: 1,flexDirection:'column'}}>
+             
             <Item style={styles.inputGroup} fixedLabel last>
-               <Label>Address</Label>
-               
-            </Item>
+                <View style={{flex: 1, flexDirection:'column'}}>
+                <Label>Address</Label>
+                <View style={{margin: 10}}><Text>{route.params.userAddress}</Text></View> 
+              </View>
 
-            <Item fixedLabel last>
-                 <Textarea rowSpan={5} style={styles.startRouteBtn} onChangeText={this.setAddress} />
+                         
+                
             </Item>
+            {/* <Button success style={{ marginTop: 10}} onPress={(address) => this.setDisplayCurrentAddress(address)}>
+                                    <Text>Check Location</Text>
+                                </Button> */}
+          </View>
+      
+
 
 
            <Item style={styles.inputGroup} fixedLabel last>
@@ -276,10 +317,12 @@ saveData = async() => {
 
           <Button full rounded success last style={{ marginTop: 50 }} onPress={this.saveData.bind(this)}>
                         <Text style={{ fontWeight: "bold" }}>Sign Up Now</Text>
-                    </Button>
+           </Button>
 
       </Form>
+      
       </Content>
+      </ScrollView>
   </Container>
     
     );

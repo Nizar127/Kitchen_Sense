@@ -24,11 +24,13 @@ import {
     Button,
     Textarea
 } from 'native-base';
+import {useRoute} from '@react-navigation/native';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import {db, auth, storage, firestore} from '../config/Firebase';
 import * as ImagePicker from 'expo-image-picker';
 import uuid from 'react-native-uuid';
 import ActionSheet from 'react-native-actionsheet'
+import Autocomplete from 'react-native-autocomplete-input';
 
 const dataArray = [
     { title: "Personal Bio", content: "Smart, Simple, Hardworking and Easy to adapt" },
@@ -56,14 +58,18 @@ const alert = [
     <Text style={{ color: 'blue', fontSize: 15, fontWeight: 'bold', fontFamily: 'montserrat' }}>Miligram</Text>,
 ]
 
+export default function(props) {
+    const route = useRoute();
+  
+    return <AddUser {...props} route={route} />;
+  }
 
 const SIZE = 80;
 //const storageRef = storage().ref('thumbnails_job').child(`${appendIDToImage}`);
 
 // [anas]
 
-
-export default class AddUser extends Component {
+ class AddUser extends Component {
     constructor() {
         super();
 
@@ -85,9 +91,12 @@ export default class AddUser extends Component {
             quantity:'',
             alert:'',
             experience:'',
+            userAddress:'',
             isLoading: false,
             uploading: false,
             DateDisplay:'',
+            searchText: '',
+            searchList: [],
             visibility: false
             //chosenDate: new Date(),
             //date_start: new Date().toString().substr(4, 12),
@@ -231,109 +240,90 @@ export default class AddUser extends Component {
         this.setState({ date_start: newDate.toString().substr(4, 12) });
     }
 
+    saveData = async() => {
+        console.log("state", this.state)
+        const {route} = this.props;
+        if (this.state.description && route.params.userAddress && this.state.fullname && this.state.email && this.state.password  && this.state.phoneNum  && this.state.url) {
+            if (this.state.password.length < 6){
+                Alert.alert('Status', 'Invalid Figure!');
+                
+            }
+            else {
+                    return firestore.collection("Household").doc(doc.user.uid).set({
+                        email: this.state.email,
+                        fullname: this.state.fullname,
+                        description: this.state.description,
+                        address: route.params.userAddress,
+                        phoneNum: this.state.phoneNum,
+                        url: this.state.url,
+                    }).then((res) => {
+                        this.setState({
+                            email: '',
+                            fullname:'',
+                            password:'',
+                            address: '',
+                            description:'',
+                            phoneNum:'',
+                            url: '',
+              
+                        });
+                        Alert.alert('Your Job Has Been Posted', 'Please Choose',
+                        [
+                            {
+                                text: "User Has Been Added Into Current Household",
+                                onPress: () => this.props.navigation.navigate('Account')
+                            },
+                        ], { cancelable: false }
+                    );
+                    })
 
-
-    _maybeRenderUploadingOverlay = () => {
-        if (this.state.uploading) {
-          return (
-            <View
-              style={[
-                StyleSheet.absoluteFill,
-                {
-                  backgroundColor: 'rgba(0,0,0,0.4)',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                },
-              ]}>
-              <ActivityIndicator color="#fff" animating size="large" />
-            </View>
-          );
+    
+            }
+        } else {
+            Alert.alert('Status', 'Empty Field(s)!');
         }
-      };
-
-    _maybeRenderImage = () => {
-        let { url } = this.state;
-        if (!url) {
-          return;
-        }
-    
-        return (
-          <View
-            style={{
-              marginTop: 10,
-              marginBottom: 10,
-              width: 350,
-              height: 250,
-              borderRadius: 3,
-              elevation: 2,
-            }}>
-            <View
-              style={{
-                borderTopRightRadius: 3,
-                borderTopLeftRadius: 3,
-                shadowColor: '#8d8f92',
-                borderColor: '#8d8f92',
-                elevation: 4,
-                borderWidth:5,
-                shadowOpacity: 0.2,
-                shadowOffset: { width: 4, height: 4 },
-                shadowRadius: 5,
-                overflow: 'hidden',
-              }}>
-              <Image source={{ uri: url }} style={{ width: null, height: 250 }} />
-            </View>
-          </View>
-        );
-    };
-
-    _takePhoto = async () => {
-        let pickerResult = await ImagePicker.launchCameraAsync({
-          allowsEditing: true,
-          aspect: [4, 3],
-        });
-    
-        this._handleImagePicked(pickerResult);
-      };
-
-    _handleImagePicked = async pickerResult => {
-        try {
-          this.setState({ uploading: true });
-    
-          if (!pickerResult.cancelled) {
-            const uploadUrl = await uploadImageAsync(pickerResult.uri);
-            this.setState({ url: uploadUrl });
-          }
-        } catch (e) {
-          console.log(e);
-          alert('Upload failed, sorry :(');
-        } finally {
-          this.setState({ uploading: false });
-        }
-      };
-
-    //Pick Image from camera or library
-    pickImage = async() => {
-        let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    
-        if (permissionResult.granted === false) {
-          alert('Permission to access camera roll is required!');
-          return;
-        }
-    
-        let pickerResult = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: true,
-            aspect: [4, 3],
-            quality: 1,
-        });
-    
-        this._handleImagePicked(pickerResult);
-    
     }
+
+
+    onClickSearch = () => {
+        console.log('state.searchText', this.state.searchText);
+
+
+        firestore.collection('Household').where('address', '==', this.state.searchText).get().then(querySnapshot => {
+            var searchList = [];
+            var text = this.state.searchText;
+            var lowercase = text.toLowerCase();
+            this.setState({ searchText: lowercase })
+            querySnapshot.forEach(doc => {
+                searchList.push({
+                    key: doc.id,
+                    job_seeker_name: doc.get('job_seeker_name'),
+                    ref_skills: doc.get('ref_skills'),
+                    jobName: doc.get('jobName'),
+                    job_seekerImage: doc.get('job_seekerImage'),
+                    job_qualification: doc.get('job_qualification'),
+                    jobExperience: doc.get('jobExperience'),
+                    jobDescription: doc.get('jobDescription'),
+                    ref_selfDescribe: doc.get('ref_selfDescribe')
+
+                });
+            });
+
+            console.log('[onClickSearch] searchList:', searchList);
+            this.setState({ searchList });
+        });
+    }
+
+
+
+
+
+
+
 
     saveData = async() => {
         console.log("state", this.state)
-        if (this.state.userID && this.state.worktype && this.state.qualification && this.state.experience && this.state.email&& this.state.jobname && this.state.uniqueId && this.state.jobdesc && this.state.salary && this.state.peoplenum  && this.state.url) {
+        if (this.state.userID && this.state.worktype && this.state.user.address && this.state.email&& this.state.jobname && this.state.uniqueId && this.state.jobdesc && this.state.salary && this.state.peoplenum  && this.state.url) {
             if (isNaN(this.state.salary && this.state.peoplenum)) {
                 Alert.alert('Status', 'Invalid Figure!');
             }
@@ -387,6 +377,7 @@ export default class AddUser extends Component {
     }
 
     render() {
+        const {route} = this.props;
         //const { modalVisible } = this.state;
         if (this.state.isLoading) {
             return (
@@ -401,37 +392,166 @@ export default class AddUser extends Component {
                     <Text style={{ textAlign: "center", height: 40, fontWeight: "bold", marginTop: 20 }}>Details</Text>
                     <Form>
 
+                    <View style={{flex:1, flexDirection: 'column', margin:20}}>
                     <Item style={styles.inputGroup} fixedLabel last>
-                            <Label>Things to Buy</Label>
-                            <Input  keyboardType="numeric" style={styles.startRouteBtn} onChangeText={this.setSalary} />
+                            <Label>Add Username</Label>
+                            <Input placeholder="Search" onChangeText={value => this.setState({ searchText: value })} />
+                           <View><Text>{this.state.searchList}</Text></View>
                         </Item>
 
-                    <Item style={styles.inputGroup} fixedLabel last onPress={this.onPressButtonClick}>
-                    <DateTimePickerModal
-                        isVisible={this.state.visibility}
-                        onConfirm={this.handleConfirm}
-                        onCancel={this.onPressCancel}
-                        mode="datetime"
-                    />
-                    <View style={{flex:1, flexDirection:'column'}}>
-                       <View style={{flex:1, flexDirection:'row'}}>
-                         <Text style={{fontWeight: "bold", fontSize: 15}}>
-                               When To Buy:                
-                         </Text>
-                                    <Icon name="md-calendar" />
-                        </View>
-                        <Text style={{padding: 2, margin:5}}>{this.state.DateDisplay} </Text>
+                        <Button primary style={{ position: 'absolute', top: 2, right: 20, bottom: 10}} onPress={this.onClickSearch}>
+                            <Text>Check User</Text>
+                        </Button>
                     </View>
+                   
 
-                    </Item>
+                        <View style={{flex:1, flexDirection: 'column'}}>
+                            <View><Text>Address</Text></View>
+                            <View style={{margin:10}}>
+                                <Text>{route.params.userAddress}</Text>
+                            </View>
+                                
+                            <View style={{ flex: 1, marginStart: 10, marginBottom: 40 }}>
+                                  
+                            <FlatList
+                            data={this.state.searchList}
+                            //contentContainerStyle={{ flexGrow: 1 }}
+                            renderItem={({ item, index }) => {
+                                console.log('item', item);
+                                return (
+                                    
+                                    <View>
+                                        
+                                    <Header searchBar rounded style={Style.searchBar}>
+                                    <Item>
+                                        <Icon name="ios-search" />
+                                        <Input placeholder="Search" onChangeText={value => this.setState({ searchText: value })} />
+                                        <Button rounded onPress={this.onClickSearch}>
+                                            <Text>Search</Text>
+                                        </Button>
+                                    </Item>
+        
+        
+                                </Header>
+                                
+                                <Card key={index} style={{flex: 1, flexDirection:'column'}}>
+                                                
+                                                <CardItem style={{ flexDirection: 'row' }}>
+                                                <Image source={{ uri: item.url }} style={{ height: 200, width: 200 }} />
+
+                                                    <Body>
+                                                        <Text style={Style.text_header}>{item.name}</Text>
+                                                    </Body>
+                                                    <Button style={Style.startRouteBtn} onPress={this.onShare}>
+                                                        <Text style={{ color: 'white', fontWeight: 'bold' }}>Share</Text>
+                                                    </Button>
+                                                </CardItem>
+
+                                                <CardItem>
+                                                    <Text style={{color:'#0D79F2'}}>{item.job_seeker_name}</Text>
+                                                </CardItem>
+                                                <CardItem style={Style.jobDesc}>
+                                                    <Text style={{fontWeight: 'bold', fontSize:13}}>About Myself:</Text>
+                                                   
+                                                </CardItem>
+                                                <View>
+                                            
+                                                        <Text>{item.ref_selfDescribe}</Text>
+                                                    
+                                                </View>
+                                                <CardItem style={Style.jobDesc}>
+                                                    <Text style={{fontWeight: 'bold', fontSize:13}}>Experience:</Text>
+                                                   
+                                                </CardItem>
+                                                <View>
+                                            
+                                                        <Text>{item.jobExperience}</Text>
+                                                    
+                                                </View>
+                                                <CardItem style={Style.jobDesc}>
+                                                    <Text style={{fontWeight: 'bold', fontSize:13}}>Qualification:</Text>
+                                                   
+                                                </CardItem>
+                                                <View>
+                                                    <Text>{item.job_qualification}</Text>
+                                                </View>
+                                                <CardItem style={Style.jobDesc}>
+                                                    <Text style={{fontWeight: 'bold', fontSize:13}}>Skills:</Text>
+                                                   
+                                                </CardItem>
+                                                <View>
+                                            
+                                                        <Text>{item.ref_skills}</Text>
+                                                    
+                                                </View>
+     
+                                                <CardItem style={{ justifyContent: 'center' }}>
+
+                                                    <Button rounded primary onPress={() => { this.setState({ key: item.key }), this.displayModal(true) }}>
+                                                        <Text style={{ fontWeight: 'bold', fontFamily: "CerealMedium" }}>Hire Now</Text>
+                                                    </Button>
+                                                </CardItem>
+                                            </Card>
+                                    </View>
+                                )
+                            }}
+                        />
+                                   
+                                    
+                                
+                            </View>  
+                        </View>
+                
 
 
-                        <Item style={styles.inputGroup} fixedLabel last>
-                            <Label>Who Will Buy</Label>
-                            <Input keyboardType="numeric" style={styles.startRouteBtn} onChangeText={this.setPeopleNum} />
-                        </Item>
-
-                    
+{/*     <View style={styles.autocompleteContainer}>
+        <Autocomplete
+          autoCapitalize="none"
+          autoCorrect={false}
+          containerStyle={styles.autocompleteView}
+          // Data to show in suggestion
+          data={filteredUser}
+          // Default value if you want to set something in input
+          defaultValue={
+            JSON.stringify(selectedValue) === '{}' ?
+            '' :
+            selectedValue.title
+          }
+          // Onchange of the text changing the state of the query
+          // Which will trigger the findFilm method
+          // To show the suggestions
+          onChangeText={(text) => findUser(text)}
+          placeholder="Enter the User"
+          renderItem={({item}) => (
+            // For the suggestion view
+            <TouchableOpacity
+              onPress={() => {
+                setSelectedValue(item);
+                setFilteredUser([]);
+              }}>
+              <Text style={styles.itemText}>
+                  {item.title}
+              </Text>
+            </TouchableOpacity>
+          )}
+        />
+        <View style={styles.descriptionContainer}>
+          {user.length > 0 ? (
+            <>
+              <Text style={styles.infoText}>
+                   Selected Data
+              </Text>
+              <Text style={styles.infoText}>
+                {JSON.stringify(selectedValue)}
+              </Text>
+            </>
+          ) : (
+            <Text style={styles.infoText}>
+                Enter The Data
+            </Text>
+          )}
+        </View>
+      </View> */}
 
                     </Form>
 
@@ -447,35 +567,20 @@ export default class AddUser extends Component {
     }
 }
 
-async function uploadImageAsync(uri) {
-    // Why are we using XMLHttpRequest? See:
-    // https://github.com/expo/expo/issues/2402#issuecomment-443726662
-    const blob = await new Promise((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-      xhr.onload = function() {
-        resolve(xhr.response);
-      };
-      xhr.onerror = function(e) {
-        console.log(e);
-        reject(new TypeError('Network request failed'));
-      };
-      xhr.responseType = 'blob';
-      xhr.open('GET', uri, true);
-      xhr.send(null);
-    });
-  
-    const ref = storage
-     .ref("job_post")
-      .child(uuid.v4());
-    const snapshot = await ref.put(blob);
-  
-    // We're done with the blob, close and release it
-    blob.close();
-  
-    return await snapshot.ref.getDownloadURL();
-  }
 
 const styles = StyleSheet.create({
+    autocompleteContainer: {
+        flex: 1,
+        left: 0,
+        position: 'absolute',
+        right: 0,
+        top: 0,
+        zIndex: 1
+      },
+      autocompleteView: {
+        backgroundColor: '#ffffff',
+        borderWidth: 0,
+      },
     closeText: {
         fontSize: 25,
         color: '#00479e',

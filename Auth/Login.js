@@ -19,13 +19,6 @@ export default class Login extends Component {
        password: ''
    })
 
-/*    auth.onAuthStateChanged(function(user){
-      if(user){
-        console.log("Logged in", user);
-      }else{
-        console.log("Logged Out");
-      }
-   }); */
 
   }
 
@@ -147,14 +140,6 @@ async loginWithFacebook() {
           </Button>
 
 
-
-          <Button style={{ marginTop: 10 }}
-            full
-            primary
-            onPress={() => this.loginWithFacebook()}
-          >
-            <Text style={{ color: 'white' }}> Login With Facebook</Text>
-          </Button>
 
 
       </Form>
