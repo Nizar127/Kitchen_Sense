@@ -240,13 +240,56 @@ const SIZE = 80;
         this.setState({ date_start: newDate.toString().substr(4, 12) });
     }
 
+    saveData = async() => {
+        console.log("state", this.state)
+        const {route} = this.props;
+        if (this.state.description && route.params.userAddress && this.state.fullname && this.state.email && this.state.password  && this.state.phoneNum  && this.state.url) {
+            if (this.state.password.length < 6){
+                Alert.alert('Status', 'Invalid Figure!');
+                
+            }
+            else {
+                    return firestore.collection("Household").doc(doc.user.uid).set({
+                        email: this.state.email,
+                        fullname: this.state.fullname,
+                        description: this.state.description,
+                        address: route.params.userAddress,
+                        phoneNum: this.state.phoneNum,
+                        url: this.state.url,
+                    }).then((res) => {
+                        this.setState({
+                            email: '',
+                            fullname:'',
+                            password:'',
+                            address: '',
+                            description:'',
+                            phoneNum:'',
+                            url: '',
+              
+                        });
+                        Alert.alert('Your Job Has Been Posted', 'Please Choose',
+                        [
+                            {
+                                text: "User Has Been Added Into Current Household",
+                                onPress: () => this.props.navigation.navigate('Account')
+                            },
+                        ], { cancelable: false }
+                    );
+                    })
+
+    
+            }
+        } else {
+            Alert.alert('Status', 'Empty Field(s)!');
+        }
+    }
 
 
     onClickSearch = () => {
         console.log('state.searchText', this.state.searchText);
 
 
-        firestore.collection('Hiring').where('jobWorkType', '==', this.state.searchText).get().then(querySnapshot => {
+        firestore.collection('Household').where('address', '==', this.state.searchText).get().then(querySnapshot => {
             var searchList = [];
             var text = this.state.searchText;
             var lowercase = text.toLowerCase();
@@ -370,11 +413,93 @@ const SIZE = 80;
                                 
                             <View style={{ flex: 1, marginStart: 10, marginBottom: 40 }}>
                                   
-                                   
+                            <FlatList
+                            data={this.state.searchList}
+                            //contentContainerStyle={{ flexGrow: 1 }}
+                            renderItem={({ item, index }) => {
+                                console.log('item', item);
+                                return (
+                                    
+                                    <View>
+                                        
+                                    <Header searchBar rounded style={Style.searchBar}>
+                                    <Item>
+                                        <Icon name="ios-search" />
+                                        <Input placeholder="Search" onChangeText={value => this.setState({ searchText: value })} />
+                                        <Button rounded onPress={this.onClickSearch}>
+                                            <Text>Search</Text>
+                                        </Button>
+                                    </Item>
+        
+        
+                                </Header>
+                                
+                                <Card key={index} style={{flex: 1, flexDirection:'column'}}>
+                                                
+                                                <CardItem style={{ flexDirection: 'row' }}>
+                                                <Image source={{ uri: item.url }} style={{ height: 200, width: 200 }} />
+
+                                                    <Body>
+                                                        <Text style={Style.text_header}>{item.name}</Text>
+                                                    </Body>
+                                                    <Button style={Style.startRouteBtn} onPress={this.onShare}>
+                                                        <Text style={{ color: 'white', fontWeight: 'bold' }}>Share</Text>
+                                                    </Button>
+                                                </CardItem>
+
+                                                <CardItem>
+                                                    <Text style={{color:'#0D79F2'}}>{item.job_seeker_name}</Text>
+                                                </CardItem>
+                                                <CardItem style={Style.jobDesc}>
+                                                    <Text style={{fontWeight: 'bold', fontSize:13}}>About Myself:</Text>
+                                                   
+                                                </CardItem>
+                                                <View>
+                                            
+                                                        <Text>{item.ref_selfDescribe}</Text>
+                                                    
+                                                </View>
+                                                <CardItem style={Style.jobDesc}>
+                                                    <Text style={{fontWeight: 'bold', fontSize:13}}>Experience:</Text>
+                                                   
+                                                </CardItem>
+                                                <View>
+                                            
+                                                        <Text>{item.jobExperience}</Text>
+                                                    
+                                                </View>
+                                                <CardItem style={Style.jobDesc}>
+                                                    <Text style={{fontWeight: 'bold', fontSize:13}}>Qualification:</Text>
+                                                   
+                                                </CardItem>
+                                                <View>
+                                                    <Text>{item.job_qualification}</Text>
+                                                </View>
+                                                <CardItem style={Style.jobDesc}>
+                                                    <Text style={{fontWeight: 'bold', fontSize:13}}>Skills:</Text>
+                                                   
+                                                </CardItem>
+                                                <View>
+                                            
+                                                        <Text>{item.ref_skills}</Text>
+                                                    
+                                                </View>
+     
+                                                <CardItem style={{ justifyContent: 'center' }}>
+
+                                                    <Button rounded primary onPress={() => { this.setState({ key: item.key }), this.displayModal(true) }}>
+                                                        <Text style={{ fontWeight: 'bold', fontFamily: "CerealMedium" }}>Hire Now</Text>
+                                                    </Button>
+                                                </CardItem>
+                                            </Card>
+                                    </View>
+                                )
+                            }}
+                        />
                                    
                                     
                                 
-                                </View>  
+                            </View>  
                         </View>
                 
 
@@ -442,33 +567,6 @@ const SIZE = 80;
     }
 }
 
-async function uploadImageAsync(uri) {
-    // Why are we using XMLHttpRequest? See:
-    // https://github.com/expo/expo/issues/2402#issuecomment-443726662
-    const blob = await new Promise((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-      xhr.onload = function() {
-        resolve(xhr.response);
-      };
-      xhr.onerror = function(e) {
-        console.log(e);
-        reject(new TypeError('Network request failed'));
-      };
-      xhr.responseType = 'blob';
-      xhr.open('GET', uri, true);
-      xhr.send(null);
-    });
-  
-    const ref = storage
-     .ref("job_post")
-      .child(uuid.v4());
-    const snapshot = await ref.put(blob);
-  
-    // We're done with the blob, close and release it
-    blob.close();
-  
-    return await snapshot.ref.getDownloadURL();
-  }
 
 const styles = StyleSheet.create({
     autocompleteContainer: {

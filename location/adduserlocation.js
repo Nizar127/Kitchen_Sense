@@ -4,7 +4,7 @@ import { StyleSheet, Text, View, Image, Alert } from 'react-native';
 import Feed from '../screens/Feed';
 import * as Location from 'expo-location';
 
-const MyLocation = ({ navigation }) => {
+const AddUserLocation = ({ navigation }) => {
   const [locationServiceEnabled, setLocationServiceEnabled] = useState(false);
   const [displayCurrentAddress, setDisplayCurrentAddress] = useState(
     'Wait, we are fetching you location...'
@@ -48,7 +48,7 @@ const MyLocation = ({ navigation }) => {
         setDisplayCurrentAddress(address);
         if (address.length > 0) {
             setTimeout(() => {
-              navigation.navigate('Login', { item: address });
+              navigation.navigate('ListAccount', { item: address });
              
             }, 2000);
           }
@@ -119,5 +119,5 @@ const styles = StyleSheet.create({
 });
 
 
-export default MyLocation;
+export default AddUserLocation;
 

@@ -31,18 +31,6 @@ import ActionSheet from 'react-native-actionsheet'
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 
-const dataArray = [
-    { title: "Personal Bio", content: "Smart, Simple, Hardworking and Easy to adapt" },
-    { title: "Skills", content: "Programming, Engineering, Mechanical, Design" },
-    { title: "Experience", content: "Working with Creative World, Worked With Brandpacker Solution" },
-    { title: "Personal Projects", content: "Develop app for ESports, Develop personal e-wallet app" },
-    { title: "Education Background", content: "UITM, UIAM, Oracle Academy" },
-    { title: "Interest", content: "Love to coding, loves science" },
-    { title: "Achievement", content: "3 times Deans's list award" }
-];
-
-
-
 const quantity = [
     'Cancel',
     <Text style={{ color: 'blue', fontSize: 15, fontWeight: 'bold', fontFamily: 'montserrat' }}>Kilogram</Text>,
@@ -73,17 +61,14 @@ export default class PostFood extends Component {
         this.state = {
             currentUser: null,
             userID: null,
-            jobname: '',
             email:'',
             name:'',
             uniqueId: '',
-            jobdesc: '',
             url: '',
             ingredientDesc:'',
             ingredientname:'',
             quantity:'',
             alert:'',
-            experience:'',
             isLoading: false,
             uploading: false,
             DateDisplay:'',
@@ -154,17 +139,6 @@ export default class PostFood extends Component {
     showActionSheetalert = () => {
         this.ActionSheet.show()
     }
-
-/*     handlePressquantity = buttonIndex => {
-        this.setState({
-          selected: buttonIndex,
-          quantity: quantity[buttonIndex]
-          
-        });
-        console.log('actionsheet:',buttonIndex);
-
-      }; */
-      
 
       handlePressalert = buttonIndex => {
         this.setState({
@@ -243,15 +217,6 @@ export default class PostFood extends Component {
     setIngredientDesc = (value) => {
         this.setState({ ingredientDesc: value })
         //console.log('job desc:',value);
-    }
-
-
-    setSalary = (value) => {
-        this.setState({ salary: value })
-    }
-
-    setPeopleNum = (value) => {
-        this.setState({ peoplenum: value })
     }
 
     setDate_Start(newDate) {
@@ -360,7 +325,7 @@ export default class PostFood extends Component {
 
     saveData = async() => {
         console.log("state", this.state)
-        if (this.state.userID && this.state.ingredientname && this.state.ingredientDesc && this.state.DateDisplay && this.state.switchValue && this.state.quantity && this.state.url) {
+        if (this.state.userID && this.state.ingredientname && this.state.ingredientDesc && this.state.DateDisplay && this.state.switchValue && this.state.quantity && this.state.alert && this.state.url) {
             if (isNaN(this.state.quantity)) {
                 Alert.alert('Status', 'Invalid Figure!');
             }
@@ -387,14 +352,15 @@ export default class PostFood extends Component {
                             ingredientDesc: '',
                             quantity: '',
                             qtyMetric: '',
-                            salary: '',
+                            date_bought:'',
+                            ExpiryReceived:'',
                             url: '',
-                            peoplenum: '',
-                            time: 0,
+                            alert:'',
+                            url:''
                         
                         })
                     });
-                    Alert.alert('Your Job Has Been Posted', 'Please Choose',
+                    Alert.alert('New Ingredient Has Been Posted', 'Please Choose',
                         [
                             {
                                 text: "Return To Main Screen",
@@ -409,6 +375,7 @@ export default class PostFood extends Component {
            // })
         }
         } else {
+            console.log("Alert", this.state)
             Alert.alert('Status', 'Empty Field(s)!');
         }
     }
@@ -431,6 +398,7 @@ export default class PostFood extends Component {
                             <Label>Name</Label>
                             <Input style={styles.startRouteBtn} onChangeText={this.setIngredientName} />
                     </Item>
+
                     <View style={styles.inputGroup} fixedLabel last>
                             <Label>Job Description</Label>
                         </View>
@@ -488,22 +456,8 @@ export default class PostFood extends Component {
                              <Text>{this.state.quantity}</Text>
                         </Item> 
                         <Item style={{marginTop: 30, marginBottom:10, marginLeft:2, marginRight:10}}  >  
-{/*                         <Button style={{ borderRadius: 40, marginRight: 10, elevation: 12 }} onPress={this.showActionSheet}>
-                                <ActionSheet
-                                    ref={o => this.ActionSheet = o}
-                                    title={<Text style={{ color: '#000', fontSize: 18 }}>Which one do you like?</Text>}
-                                    options={quantity}
-                                    cancelButtonIndex={0}
-                                    destructiveButtonIndex={6}
-                                    selectedValue={this.state.quantity}
-                                    value={this.state.quantity}
-                                    onPress={this.handlePressQuantity}
-                                    
-                                />
-                                <Text style={{ fontWeight: "bold", fontSize: 10, padding: 10 }}>Choose Metric</Text>
 
-                            </Button> */}
-                            <Form>
+                    <Form>
                         <Picker
                             style={{ width: 200, height: 40 }}
                             iosHeader="Branch"
@@ -522,7 +476,7 @@ export default class PostFood extends Component {
                             }
                             )}
                             </Picker>
-                        </Form>
+                    </Form>
                             
                         </Item>  
 

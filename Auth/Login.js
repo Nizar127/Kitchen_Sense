@@ -63,7 +63,7 @@ loginUser = () => {
         auth.signInWithEmailAndPassword(this.state.email, this.state.password).then(function (user) {
             
         })
-        this.props.navigation.navigate('MyLocation');
+        this.props.navigation.navigate('Home');
 
     }
     catch (error) {
@@ -140,14 +140,6 @@ async loginWithFacebook() {
           </Button>
 
 
-
-          <Button style={{ marginTop: 10 }}
-            full
-            primary
-            onPress={() => this.loginWithFacebook()}
-          >
-            <Text style={{ color: 'white' }}> Login With Facebook</Text>
-          </Button>
 
 
       </Form>

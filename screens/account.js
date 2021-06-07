@@ -171,7 +171,7 @@ export default class Account extends Component {
                             <View style={{ flex: 1, marginStart: 10, marginBottom: 40 }}>
                               
                                
-                                <Button success style={{ position: 'absolute', top: 2, right: 20, bottom: 10}} onPress={() => this.props.navigation.navigate('ListAccount')}>
+                                <Button success style={{ position: 'absolute', top: 2, right: 20, bottom: 10}} onPress={() => this.props.navigation.navigate('AddUserLocation')}>
                                     <Text>View User</Text>
                                 </Button>
                             
