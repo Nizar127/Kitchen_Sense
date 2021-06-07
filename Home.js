@@ -10,11 +10,19 @@ import { Ionicons } from '@expo/vector-icons';
 import BuyingPlan from './screens/buying_plan';
 import Account from './screens/account';
 import MyLocation from './location/location';
-
+import { useRoute } from '@react-navigation/native';
 
 export default function Home() {
-    return (
-     
+  const route = useRoute();
+
+ 
+  return (
+      <View style={{ flex: 1 }}>
+        
+          <View>
+               <Text style={{fontSize: 20}}>{route.params.item}</Text>
+          </View>
+  
         <Tab.Navigator
         screenOptions={({ route }) => ({
           tabBarIcon: ({  color, size }) => {
@@ -58,6 +66,8 @@ export default function Home() {
           <Tab.Screen name="BuyingPlan" component={BuyingPlan} />
           <Tab.Screen name="Account" component={Account} />
         </Tab.Navigator>
+
+        </View>
      
     );
   }

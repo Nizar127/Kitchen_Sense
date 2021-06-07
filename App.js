@@ -23,6 +23,7 @@ import MyOrderDetail from './screens/MyOrderDetail';
 import { useEffect } from 'react/cjs/react.development';
 import ListAccount from './screens/ListAccount';
 import AddUser from './screens/AddUser';
+import MyLocation from './location/location';
 import UserStartLocation from './location/userStartLocation';
 
 
@@ -50,6 +51,7 @@ function App() {
         <Stack.Screen name="ListAccount" component={ListAccount}/>
         <Stack.Screen name="AddUser" component={AddUser}/>
         <Stack.Screen name="UserStartLocation" component={UserStartLocation}/>
+        <Stack.Screen name="MyLocation" component={MyLocation}/>
 
       </Stack.Navigator>
 

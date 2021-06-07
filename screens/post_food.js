@@ -75,13 +75,11 @@ export default class PostFood extends Component {
             userID: null,
             jobname: '',
             email:'',
+            name:'',
             uniqueId: '',
             jobdesc: '',
             url: '',
-            worktype: '',
-            salary: '',
-            peoplenum: '',    
-            qualification:'',
+            ingredientDesc:'',
             ingredientname:'',
             quantity:'',
             alert:'',
@@ -90,6 +88,7 @@ export default class PostFood extends Component {
             uploading: false,
             DateDisplay:'',
             visibility: false,
+            switchValue: '',
            metric: [
                 { gram: 'Kilogram', id: 1 },
                 { gram: 'Gram', id: 2 },
@@ -197,6 +196,10 @@ export default class PostFood extends Component {
     };
 
 
+    setName = (value) =>{
+        this.setState({name: value});
+    }
+
     setUserID = (value) => {
         this.setState({ userID: value });
 
@@ -237,8 +240,8 @@ export default class PostFood extends Component {
         this.setState({ uniqueId: value })
     }
 
-    setJobDesc = (value) => {
-        this.setState({ jobdesc: value })
+    setIngredientDesc = (value) => {
+        this.setState({ ingredientDesc: value })
         //console.log('job desc:',value);
     }
 
@@ -357,8 +360,8 @@ export default class PostFood extends Component {
 
     saveData = async() => {
         console.log("state", this.state)
-        if (this.state.userID && this.state.worktype && this.state.qualification && this.state.experience && this.state.email&& this.state.jobname && this.state.uniqueId && this.state.jobdesc && this.state.salary && this.state.peoplenum  && this.state.url) {
-            if (isNaN(this.state.salary && this.state.peoplenum)) {
+        if (this.state.userID && this.state.ingredientname && this.state.ingredientDesc && this.state.DateDisplay && this.state.switchValue && this.state.quantity && this.state.url) {
+            if (isNaN(this.state.quantity)) {
                 Alert.alert('Status', 'Invalid Figure!');
             }
             else {
@@ -366,24 +369,24 @@ export default class PostFood extends Component {
                     
                     this.dbRef.add({
                         uid: auth.currentUser.uid,
-                        jobCreatorname: this.state.email,
-                        jobname: this.state.jobname,
-                        uniqueId: this.state.uniqueId,
-                        jobdesc: this.state.jobdesc,
-                        salary: this.state.salary,
+                        ingredientname: this.state.ingredientname,
+                        ingredientDesc: this.state.ingredientDesc,
+                        quantity: this.state.quantity,
+                        qtyMetric: this.state.selected1,
+                        date_bought: this.state.DateDisplay,
+                        ExpiryReceived: this.state.switchValue,
+                        alert: this.state.alert,
                         url: this.state.url,
-                        worktype: this.state.worktype,
-                        experience: this.state.experience,
-                        qualification: this.state.qualification,
-                        peoplenum: this.state.peoplenum,
+
                         
                     }).then((res) => {
                         console.log("[saveData] Done add to firebase", res);
 
                         this.setState({
-                            jobname: '',
-                            uniqueId: '',
-                            jobdesc: '',
+                            ingredientname: '',
+                            ingredientDesc: '',
+                            quantity: '',
+                            qtyMetric: '',
                             salary: '',
                             url: '',
                             peoplenum: '',
@@ -427,6 +430,12 @@ export default class PostFood extends Component {
                     <Item style={styles.inputGroup} fixedLabel last>
                             <Label>Name</Label>
                             <Input style={styles.startRouteBtn} onChangeText={this.setIngredientName} />
+                    </Item>
+                    <View style={styles.inputGroup} fixedLabel last>
+                            <Label>Job Description</Label>
+                        </View>
+                        <Item>
+                            <Textarea rowSpan={5} colSpan={5} onChangeText={this.setIngredientDesc} bordered style={styles.startTextBtn} placeholder="Tell something about the job Here" />
                         </Item>
 
                  <Item style={styles.inputGroup} fixedLabel last onPress={this.onPressButtonClick}>
@@ -472,11 +481,7 @@ export default class PostFood extends Component {
                             {this._maybeRenderUploadingOverlay()}
 
 
-                        <Item style={styles.inputGroup} fixedLabel last>
-                            <Label>Number of People</Label>
-                            <Input keyboardType="numeric" style={styles.startRouteBtn} onChangeText={this.setPeopleNum} />
-                        </Item>
-
+    
                         <Item>
                              <Label>Quantity</Label>
                              <Input keyboardType="numeric" style={styles.startRouteBtn} onChangeText={this.setPeopleNum} />

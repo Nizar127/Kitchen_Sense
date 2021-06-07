@@ -35,13 +35,13 @@ import { useRoute } from '@react-navigation/native';
 import MyLocation from '../location/location';
 //import Location from 'Location';
 
-export default function(props) {
+/* export default function(props) {
     const route = useRoute();
   
     return <Feed {...props} route={route} />;
-  }
+  } */
   
- class Feed extends Component {
+ export default class Feed extends Component {
 
     constructor() {
         super();
@@ -275,7 +275,7 @@ export default function(props) {
 
     render() {
 
-        const {route} = this.props;
+        //const {route} = this.props;
         return (
             <Container>
 
@@ -284,14 +284,14 @@ export default function(props) {
 
                     <View style={{flex:1, flexDirection: 'column'}}>
                             
-                        <View><Text>{route.params.item}</Text></View>
+                        {/* <View><Text>{route.params.item}</Text></View>  */}
                             
                         <View style={{ flex: 1, marginStart: 10, marginBottom: 40 }}>
                               
                                
-                                <Button success style={{ position: 'absolute', top: 2, right: 20, bottom: 10}} onPress={() => this.props.navigation.navigate('MyLocation')}>
+                               {/*  <Button success style={{ position: 'absolute', top: 2, right: 20, bottom: 10}} onPress={() => this.props.navigation.navigate('MyLocation')}>
                                     <Text>Check Location</Text>
-                                </Button>
+                                </Button> */}
                             
                             </View>  
                     </View>
@@ -336,28 +336,45 @@ export default function(props) {
                     </Modal>
                     <View style={{ flex: 1, /* backgroundColor: '#292D5C' */ shadowColor: 'white', backgroundColor: '#242836' }}>
                         <FlatList
-                            data={this.state.hire}
-                                                
+                            data={this.state.hire}                              
                             contentContainerStyle={{ flexGrow: 1 }}
+                            numColumns={2}
                             renderItem={({ item, index }) => {
                                 return (
                                     <SafeAreaView>
                                         <ScrollView>
-                                            <View style={{ flex: 1, flexDirection: 'row'}}>
+                                            <View style={{ flex: 1, flexDirection: 'column'}}>
                                             <Card key={index} style={Style.card} >
                                                 <CardItem header bordered style={{ flexDirection: 'row' }}>
-                                                    <Text>{item.jobName}</Text>
+                                                    <Text>{item.ingredientname}</Text>
                                                     <Right>
                                                         <Button success onPress={() => { this.setState({ key: item.key }), this.displayModal(true) }}>
-
-                                                            <Text style={Style.buttonHireText}>Hire</Text>
+                                                             <Text style={Style.buttonHireText}>Hire</Text>
                                                         </Button>
                                                     </Right>
 
                                                 </CardItem>
                                                 <CardItem header>
-                                                    <Text>{item.job_seeker_name}</Text>
+                                                    <View style={{ flex: 1, flexDirection:'row'}}>
+                                                        <Text>{item.quantity}</Text>
+                                                        <Text>{item.qtyMetric}</Text>
+                                                    </View>
+                                                    
 
+                                                </CardItem>
+                                                <CardItem style={{flex: 1, flexDirection: 'column'}}>
+                                                    <Body>
+                                                        <Right>
+                                                            <Text>
+                                                                {item.date_bought}
+                                                            </Text>
+                                                        </Right>
+                                                    </Body>
+                                                    <Body>
+                                                        <Text>
+                                                            {item.alert}
+                                                        </Text>
+                                                    </Body>
                                                 </CardItem>
                                                 <CardItem bordered button onPress={() => {
                                                     this.props.navigation.navigate('JobCreatorDetail', {
@@ -366,10 +383,10 @@ export default function(props) {
                                                 }}>
                                                     <CardItem cardBody style={{ flexDirection: 'row' }}>
                                                         <Left>
-                                                            <Thumbnail large source={{ uri: item.job_seekerImage }} style={{ margin: 5 }} />
+                                                            <Thumbnail large source={{ uri: item.url }} style={{ margin: 5 }} />
                                                         </Left>
                                                         <Body>
-                                                        <Text style={{ paddingBottom: 7, margin: 10 }}>{item.jobDescription}</Text>
+                                                        <Text style={{ paddingBottom: 7, margin: 10 }}>{item.ingredientDesc}</Text>
                                                             <Text style={{ paddingBottom: 7 }}>Capability</Text>
                                                             <Text note style={{ padding: 3 }}>{item.ref_skills}</Text>
                                                             <Text style={{ padding: 3 }}>{item.ref_selfDescribe}</Text>

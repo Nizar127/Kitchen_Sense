@@ -48,7 +48,7 @@ const MyLocation = ({ navigation }) => {
         setDisplayCurrentAddress(address);
         if (address.length > 0) {
             setTimeout(() => {
-              navigation.navigate('Feed', { item: address });
+              navigation.navigate('Home', { item: address });
              
             }, 2000);
           }
