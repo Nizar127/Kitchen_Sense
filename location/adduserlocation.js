@@ -40,15 +40,15 @@ const AddUserLocation = ({ navigation }) => {
         longitude
       });
   
-      for (let item of response) {
+      for (let myaddress of response) {
         
 
-        let address = `${item.name}, ${item.street}, ${item.postalCode}, ${item.city}`;
+        let address = `${myaddress.name}, ${myaddress.street}, ${myaddress.postalCode}, ${myaddress.city}`;
   
         setDisplayCurrentAddress(address);
         if (address.length > 0) {
             setTimeout(() => {
-              navigation.navigate('ListAccount', { item: address });
+              navigation.navigate('ListAccount', { myaddress: address });
              
             }, 2000);
           }
