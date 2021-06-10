@@ -239,7 +239,7 @@ export default class Profile extends Component {
                         </CardItem>
                         <CardItem cardBody>
                             <Content>
-                                {}
+                               
                             </Content>
                         </CardItem>
 {/*                         <CardItem cardBody>
