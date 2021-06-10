@@ -44,13 +44,12 @@ export default class EditProfileJobCreator extends Component {
         //firebase.firestore().collection('Users').doc(user.uid).set(user).collection('Job_Creator');
         this.state = {
             users: [],
-            textInput: [],
-            inputData: [],
+            //textInput: [],
+            //inputData: [],
             username: '',
             fullname: '',
             phonenumber: '',
             profileImage: '',
-            keyplayer: '',
             description: '',
             uniqueId: '',
             jobdesc: '',
@@ -59,8 +58,7 @@ export default class EditProfileJobCreator extends Component {
             imageType: '',
             worktype: '',
             show: true,
-            skills: '',
-            experience: '',
+            address:'',
             //listViewData: data,
 
 
@@ -147,58 +145,6 @@ export default class EditProfileJobCreator extends Component {
           this.setState({ uploading: false });
         }
       };
-    //function to add TextInput dynamically
-    addTextInput = (index) => {
-        let textInput = this.state.textInput;
-        textInput.push(
-            <View key={index} style={{ flexDirection: 'row', margin: 5 }}>
-                <TextInput style={styles.startRouteBtn} onChangeText={(text) => this.addValues(text, index)} />
-                <Icon android name="md-remove" size={30} style={{ marginTop: 30 }} onPress={() => this.removeTextInput()} />
-            </View>
-
-        );
-        this.setState({ textInput });
-    }
-
-    //function to remove TextInput dynamically
-    removeTextInput = () => {
-        let textInput = this.state.textInput;
-        let inputData = this.state.inputData;
-        textInput.pop();
-        inputData.pop();
-        this.setState({ textInput, inputData });
-    }
-
-    //function to add text from TextInputs into single array
-    addValues = (text, index) => {
-        let dataArray = this.state.inputData;
-        let checkBool = false;
-        if (dataArray.length !== 0) {
-            dataArray.forEach(element => {
-                if (element.index === index) {
-                    element.text = text;
-                    checkBool = true;
-                }
-            });
-        }
-        if (checkBool) {
-            this.setState({
-                inputData: dataArray
-            });
-        }
-        else {
-            dataArray.push({ 'text': text, 'index': index });
-            this.setState({
-                inputData: dataArray
-            });
-        }
-    }
-
-    //function to console the output
-    getValues = () => {
-        console.log('Data', this.state.inputData);
-    }
-
 
 
     inputValueUpdate = (val, prop) => {
@@ -232,20 +178,22 @@ export default class EditProfileJobCreator extends Component {
 
     updateUser = () => {
 
-        let skills = [this.state.skills];
+/*         let skills = [this.state.skills];
         for (let index = 0; index < this.state.inputData.length; index++) {
             const element = this.state.inputData[index];
             skills.push(element.text);
 
         }
-        console.log('skills', skills);
+        console.log('skills', skills); */
 
-        const updateDBRef = firestore.collection('Employer').doc(auth.currentUser.uid);
+        const updateDBRef = firestore.collection('Users').doc(auth.currentUser.uid);
 
             updateDBRef.update({
                 fullname: this.state.username,
                 description: this.state.description,
-                skills: skills,
+                //skills: skills,
+                phoneNum:this.state.phonenum,
+                address: this.state.address,
                 url: this.state.url
             }).then((docRef) => {
 
@@ -323,6 +271,48 @@ export default class EditProfileJobCreator extends Component {
                                         value={this.state.description}
                                         style={styles.startRouteBtn}
                                         onChangeText={(val) => this.inputValueUpdate(val, 'description')}
+                                    />
+                                </View>
+                            </Body>
+                        </CardItem>
+                    </Card>
+
+                    <Card>
+                        <CardItem header bordered>
+                            <Text style={styles.MainText}>Phone Number</Text>
+                        </CardItem>
+                        <CardItem cardBody bordered button
+                        // onPress={() => { this.setModalVisible(true); this.setInputText(item.text), this.setEditedItem(item.id) }}
+                        >
+                            <Body>
+                                <View style={styles.inputGroup}>
+                                    <Textarea
+                                        rowSpan={5}
+                                        placeholder={'Phone Number'}
+                                        value={this.state.phonenumber}
+                                        style={styles.startRouteBtn}
+                                        onChangeText={(val) => this.inputValueUpdate(val, 'phonenumber')}
+                                    />
+                                </View>
+                            </Body>
+                        </CardItem>
+                    </Card>
+
+                    <Card>
+                        <CardItem header bordered>
+                            <Text style={styles.MainText}>Address</Text>
+                        </CardItem>
+                        <CardItem cardBody bordered button
+                        // onPress={() => { this.setModalVisible(true); this.setInputText(item.text), this.setEditedItem(item.id) }}
+                        >
+                            <Body>
+                                <View style={styles.inputGroup}>
+                                    <Textarea
+                                        rowSpan={5}
+                                        placeholder={'Address'}
+                                        value={this.state.address}
+                                        style={styles.startRouteBtn}
+                                        onChangeText={(val) => this.inputValueUpdate(val, 'address')}
                                     />
                                 </View>
                             </Body>

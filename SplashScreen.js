@@ -44,12 +44,27 @@ const SplashScreen = ({ navigation }) => {
                 <Text style={styles.title}>Welcome to Kitchen Sense</Text>
                 <Text style={styles.text}>Sign in with account</Text>
                 <View style={styles.button}>
-                    <TouchableOpacity onPress={() => navigation.push('Login')}>
+                    <TouchableOpacity onPress={() => navigation.push('MyLocation')}>
                         <LinearGradient
                             colors={['#08d4c4', '#01ab9d']}
                             style={styles.signIn}
                         >
                             <Text style={styles.textSign}>Let's Go!</Text>
+                            <MaterialIcons
+                                name="navigate-next"
+                                color="#fff"
+                                size={20}
+                            />
+                        </LinearGradient>
+                    </TouchableOpacity>
+                </View>
+                <View style={styles.button}>
+                    <TouchableOpacity onPress={() => navigation.push('UserStartLocation')}>
+                        <LinearGradient
+                            colors={['#08d4c4', '#01ab9d']}
+                            style={styles.signIn}
+                        >
+                            <Text style={styles.textSign}>Sign Up</Text>
                             <MaterialIcons
                                 name="navigate-next"
                                 color="#fff"
@@ -108,7 +123,7 @@ const styles = StyleSheet.create({
     },
     button: {
         alignItems: 'flex-end',
-        marginTop: 30
+        marginTop: 20
     },
     signIn: {
         width: 150,

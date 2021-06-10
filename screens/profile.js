@@ -15,14 +15,12 @@ import {
     CardItem,
     Thumbnail,
     Text,
-    Item,
     Left,
     Body,
     Icon,
     List,
     ListItem,
     Separator,
-    Textarea,
     Button
 } from 'native-base';
 import {db, auth, storage, firestore} from '../config/Firebase';
@@ -41,12 +39,9 @@ export default class Profile extends Component {
         //firebase.firestore().collection('Users').doc(user.uid).set(user).collection('Job_Creator');
         this.state = {
             users: [],
-            skills: [],
-            experience: [],
             username: '',
             fullname: '',
             email: '',
-            address:'',
             key: '',
             phoneNum:'',
             description: '',
@@ -72,53 +67,9 @@ export default class Profile extends Component {
         };
 
     }
+
     componentDidMount() {
-        const detailRef = firestore.collection('User').doc(this.props.route.params.userkey);
-        detailRef.get().then((res) => {
-            if (res.exists) {
-                const user = res.data();
-                this.setState({
-                    key: res.id,
-                    userID: job.userID,
-                    address: user.address,
-                    description: user.description,
-                    email:user.email,
-                    fullname:user.fullname,
-                    phoneNum:user.phoneNum,
-                    url:user.url,
-                   
-                });
-                console.log("state", this.state)
-            } else {
-                console.log("Whoops! Document does not exists");
-            }
-        })
-    }
-
-    RemoveUser=()=>{
-        Alert.alert(
-          'Delete User',
-          'Are you sure?',
-          [
-            {text: 'Yes', onPress: () => this.deleteUser()},
-            {text: 'No', onPress: () => console.log('No item was removed'), style: 'cancel'},
-          ],
-          { 
-            cancelable: true 
-          }
-        );
-      }
-
-    deleteUser() {
-        const dbRef = firebase.firestore().collection('Users').doc(this.props.route.params.userkey)
-          dbRef.delete().then((res) => {
-              console.log('Item removed from database')
-              this.props.navigation.navigate('UserScreen');
-          })
-      }
-
-/*     componentDidMount() {
-        this.unsubscribe = firestore.collection('Employer').doc(auth.currentUser.uid).onSnapshot(doc => {
+        this.unsubscribe = firestore.collection('Users').doc(auth.currentUser.uid).onSnapshot(doc => {
             console.log(doc);
             const { email, fullname, phoneNum, url, address, description, skills} = doc.data();
             this.setState({
@@ -128,13 +79,12 @@ export default class Profile extends Component {
                 phoneNum,
                 url,
                 address,
-                skills
             })
             console.log("doc", doc)
         });
       
         //this.unsubscribe = firebase.firestore().collection('Users').onSnapshot(this.getCollection);
-    } */
+    }
 
     componentWillUnmount() {
         this.unsubscribe();
@@ -205,27 +155,45 @@ export default class Profile extends Component {
             <View style={{ flex: 1 }}>
                 <ScrollView>
                     <Card>
+                    <CardItem header bordered >
+                            <View style={{ flex: 1, marginStart: 10, marginBottom: 40 }}>                 
+                                <Button success style={{ position: 'absolute', top: 2, right: 20, bottom: 10}} onPress={() => this.props.navigation.navigate('ListAccount')}>
+                                    <Text>Manage Household User</Text>
+                                </Button>
+                            
+                            </View>  
+                        </CardItem>
                         <CardItem cardBody>
-                            <Image source={{ uri: this.state.url ? this.state.url : auth.currentUser.photoURL }} style={{ height: 200, width: null, flex: 1 }} />
-
+                            <Image source={{ uri: this.state.url }} style={{ height: 200, width: null, flex: 1 }} />
                         </CardItem>
                         <CardItem>
                             <Body>
                                 <Text style={{ fontSize: 20, fontWeight: 'bold', justifyContent: 'center' }}>{this.state.fullname ? this.state.fullname : auth.currentUser.email}</Text>
                             </Body>
                         </CardItem>
-
-
                     </Card>
+
+
 
                     <Card style={{ height: 80 }}>
                     <CardItem header bordered>
-                            <Text>Email</Text>
+                            <Text>FullName</Text>
                         </CardItem>
                         <CardItem cardBody bordered button>
-                            <Text style={{ margin: 30, fontWeight: 'bold'}}>{this.state.email}</Text>
+                            <Text style={{ margin: 30, fontWeight: 'bold'}}>{this.state.fullname}</Text>
                         </CardItem>
                     </Card> 
+
+                   <Card style={{ height: 100 }}>
+                   <CardItem header bordered>
+                            <Text>My Application</Text>
+                        </CardItem>
+                        <CardItem cardBody bordered button onPress={() => this.props.navigation.navigate('MyJob')}>
+                            <Text style={{ margin: 30}}>Click Here to View Your Uploaded Job</Text>
+                        </CardItem>
+                    </Card> 
+
+
 
                     <Card style={{ height: 200 }}>
                         <CardItem header bordered>
@@ -257,10 +225,7 @@ export default class Profile extends Component {
                         </CardItem>
                         <CardItem cardBody bordered button>
                             <Body>
-
-                        <Item>
-                            <Textarea rowSpan={5} colSpan={5} onChangeText={this.setJobDesc} bordered style={styles.startTextBtn} placeholder="Tell something about the job Here" />
-                        </Item>
+                                <Text style={{ margin: 30 }}>{this.state.address}</Text>
 
                             </Body>
                         </CardItem>
@@ -270,9 +235,14 @@ export default class Profile extends Component {
                      <Card>
                         <CardItem header bordered>
 
-                            <Text>Skills</Text>
+                            <Text>Buying Plan</Text>
                         </CardItem>
                         <CardItem cardBody>
+                            <Content>
+                                {}
+                            </Content>
+                        </CardItem>
+{/*                         <CardItem cardBody>
                             <Content>
                                 {
                                      this.state.skills &&                      
@@ -286,30 +256,19 @@ export default class Profile extends Component {
                                 }
 
                             </Content>
-                        </CardItem>
+                        </CardItem> */}
                     </Card>
                    
+
+
+
                     <Card>
-                        <CardItem>
-                            <View style={{flex:1, flexDirection:'row'}}>
-                            <Button primary last style={{ marginTop: 20, marginBottom: 5 }} onPress={() => this.props.navigation.navigate('EditProfileJobCreator')}>
-                                <Text style={{ fontSize: 18, fontWeight: 'bold', fontFamily: 'montserrat' }}>Edit Profile</Text>
-                            </Button>
-                            <Button danger last style={{ marginTop: 20, marginBottom: 5 }} onPress={() => this.RemoveUser}>
-                                <Text style={{ fontSize: 18, fontWeight: 'bold', fontFamily: 'montserrat' }}>Delete User</Text>
-                            </Button>
-                            </View>
-                        </CardItem>
-                    </Card>
-
-
-             {/*        <Card>
 
                         <Button block primary last style={{ marginTop: 20, marginBottom: 5 }} onPress={() => this.props.navigation.navigate('EditProfileJobCreator')}>
                             <Text style={{ fontSize: 18, fontWeight: 'bold', fontFamily: 'montserrat' }}>Edit Profile</Text>
                         </Button>
 
-                    </Card> */}
+                    </Card>
 
                 </ScrollView>
 
@@ -383,17 +342,5 @@ const styles = StyleSheet.create({
         marginVertical: 10,
         alignSelf: 'stretch',
         alignItems: 'center',
-    },
-    startTextBtn: {
-        backgroundColor: 'white',
-        width: 300,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginHorizontal: 10,
-        borderWidth: 1,
-        borderColor: 'grey',
-        shadowColor: 'black',
-        margin: 20,
-        elevation: 10
-    },
+    }
 })

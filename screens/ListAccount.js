@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import {
     StyleSheet, ScrollView, Image, FlatList,
     UIManager, Animated,
-    LayoutAnimation, TextInput, Modal, TouchableHighlight
+    LayoutAnimation, TextInput, Modal, TouchableHighlight, SafeAreaView
 } from 'react-native';
 import {
     Container,
@@ -26,23 +26,23 @@ import {
     Button,
 } from 'native-base';
 import {db, auth, storage, firestore} from '../config/Firebase';
-
+import { useRoute } from '@react-navigation/native';
 import { Alert } from 'react-native';
 
 console.disableYellowBox = true;
-
-export default class ListAccount extends Component {
-
+ export default function(props) {
+    const route = useRoute();
+  
+    return <ListAccount {...props} route={route} />;
+  }  
+  
+ class ListAccount extends Component {
 
     constructor() {
         super();
-
-
-        //firebase.firestore().collection('Users').doc(user.uid).set(user).collection('Job_Creator');
+        
         this.state = {
             users: [],
-            skills: [],
-            experience: [],
             username: '',
             fullname: '',
             email: '',
@@ -55,9 +55,6 @@ export default class ListAccount extends Component {
             jobdesc: '',
             photo: '',
             url: '',
-            imageType: '',
-            worktype: '',
-            salary: '',
             peoplenum: '',
             address:'',
             show: true,
@@ -69,33 +66,53 @@ export default class ListAccount extends Component {
             editedItem: 0,
 
         };
+        
 
     }
+
 
     componentDidMount() {
-       /*  this.unsubscribe = firestore.collection('Employer').doc(auth.currentUser.uid).onSnapshot(doc => {
-            console.log(doc);
-            const { email, fullname, phoneNum, url, address, description, skills} = doc.data();
-            this.setState({
-                email,
-                fullname,
-                description,
-                phoneNum,
-                url,
-                address,
-                skills
-            })
-            console.log("doc", doc)
-        });
-       */
-        //this.unsubscribe = firebase.firestore().collection('Users').onSnapshot(this.getCollection);
+        const {route} = this.props;
+        this.accountRef = firestore.collection('Users').where('address', '==', route.params.myaddress);
+        this.unsubscribe = this.accountRef.onSnapshot(this.getCollection);
+        console.log("route",route.params.myaddress);
     }
+
 
     componentWillUnmount() {
-        //this.unsubscribe();
+        this.unsubscribe();
     }
 
-
+    getCollection = (querySnapshot) => {
+        const users = [];
+        querySnapshot.forEach((res) => {
+            const {
+                userID,
+                email,
+                fullname,
+                address,
+                description,
+                url,
+                phoneNum,
+            } = res.data();
+            users.push({
+                key: res.id,
+                res,
+                userID,
+                email,
+                fullname,
+                address,
+                description,
+                url,
+                phoneNum,
+            });
+        });
+        this.setState({
+            users,
+            isLoading: false
+        })
+        console.log("flatlist",this.state.users)
+    }
 
     setModalVisible = (bool) => {
         this.setState({ isModalVisible: bool })
@@ -144,126 +161,91 @@ export default class ListAccount extends Component {
         this.setState({ myText: value })
     }
 
-
-    componentDidMount() {
-        //this.unsubscribe = this.applicationRef.onSnapshot(this.getCollection);
-        //let DataRef = firestore().collection('Hiring').doc(auth().currentUser.uid).get().then(documentSnapshot => this.getDataOfJob(documentSnapshot));
-
-
-    }
-
-
-    componentWillUnmount() {
-        this.unsubscribe();
-    }
-
-    getCollection = (querySnapshot) => {
-        const users = [];
-        querySnapshot.forEach((res) => {
-            const {
-                userID,
-                address,
-                fullname,
-                email,
-                url,
-                phoneNum,
-                description,
-            } = res.data();
-            users.push({
-                key: res.id,
-                res,
-                userID,
-                address,
-                fullname,
-                email,
-                url,
-                phoneNum,
-                description,
-            });
-        });
-        this.setState({
-            users,
-            isLoading: false
-        })
-    }
-
-
-
     render() {
+        const{route} = this.props;
         return (
             <View style={{ flex: 1 }}>
                 <ScrollView>
                     <Container>
-                        <Content>
+                        <Content>              
+                            <Card>
+                            <Content>
+                                <View>
+                                    <Text style={{ flex: 1, fontSize: 15, textAlign: 'center', margin: 5}}>dsManage Your Household</Text>
+                                </View>
 
-                        
-                    <Card>
-                    <Content>
-                        <View>
-                            <Text style={{ flex: 1, fontSize: 15, textAlign: 'center', margin: 5}}>Manage Your Household</Text>
+                                <View style={{margin: 10}}>
+                                    <Text style={{ flex: 1, fontSize: 15, textAlign: 'center', margin: 5}}>List of People on This House</Text>
+                                    <View style={{flex: 1, flexDirection:'row'}}>
+                                       <Left>
+                                           <Icon name="md-location"/>
+                                       </Left>
+                                        <Text style={{ flex: 1, fontSize: 15, textAlign: 'center', margin: 5}}>{route.params.myaddress}</Text>
+
+                                    </View>
+                                    <Text note style={{ flex: 1, fontSize: 15, textAlign: 'center', margin: 5}}>You can add or remove user</Text>
+                                </View>
+                            </Content>
+                            </Card>
+                            <Container>
+                                <Content>
+                           
+                                <View style={{ height: 400,backgroundColor: '#242836', margin:5 }}>
+                                 
+                                  <FlatList
+                                        data={this.state.users}
+                                        //contentContainerStyle={{ flexGrow: 1 }}
+                                        renderItem={({ item, index }) => {
+                                            return (
+                                                 <SafeAreaView>
+                                                    <ScrollView>
+                                                        <List style={{backgroundColor: '#fff', marginTop:5}} key={index} onPress={() => {
+                                                          this.props.navigation.navigate('AccountDetail', {
+                                                                userkey: item.key
+                                                          });
+                                                        }}>
+                                                            <ListItem>
+                                                                
+                                                            <Left>
+                                                                 <Thumbnail large source={{ uri: item.url  }} />
+
+                                                            </Left>
+                                                         
+                                                                        <Body>
+                                                                            <Text>{item.fullname}</Text>
+                                                                        </Body>
+                                                            </ListItem>
+                                                        </List>                                                     
+                                                    </ScrollView>
+                                               </SafeAreaView>
+                                            )
+                                        }}
+                                    />
+                                 
+                                </View>
+                                <View style={{flex: 1, flexDirection:'row', margin: 10, alignItems: 'center', justifyContent:'space-around'}}>
+                                    <Button light>
+                                        <Text>Cancel</Text>
+                                    </Button>
+                                    <Button danger iconRight>
+                                        <Text>Delete</Text>
+                                        <Icon name="md-trash-outline"/>
+                                    </Button>
+                                </View>
+                                
+                                    </Content>
+                                    </Container>
+                                
+                            
+
+                                </Content>
+
+                                </Container>
+                                
+
+                            </ScrollView>
+
                         </View>
-                        <View>
-                            <Text style={{ flex: 1, fontSize: 15, textAlign: 'center', margin: 5}}>List of People on This House</Text>
-                            <Text note style={{ flex: 1, fontSize: 15, textAlign: 'center', margin: 5}}>You can add or remove user</Text>
-                        </View>
-
-                    <View style={{ flex: 1, /* backgroundColor: '#292D5C' */ shadowColor: 'white', backgroundColor: '#242836' }}>
-                        <FlatList
-                            data={this.state.users}
-                            contentContainerStyle={{ flexGrow: 1 }}
-                            renderItem={({ item, index }) => {
-                                return (
-                                    <SafeAreaView>
-                                        <ScrollView>
-                                            <Card key={index} style={styles.card} >
-                                            <List longPress={this.handleLongPress}>
-                                                <ListItem avatar>
-                                                <Left>
-                                                    <Thumbnail source={{ uri: this.state.url ? this.state.url : auth.currentUser.photoURL }} style={{ height: 200, width: null, flex: 1 }} />
-                                                </Left>
-                                                <Body>
-                                                    <Text>{item.fullname}</Text>
-                                                    <Icon name="md-location"/><Text note>Household</Text>
-                                                </Body>
-                                                <Right>
-                                                    <Icon name="arrow-forward" onPress={() => {
-                                                    this.props.navigation.navigate('Profile', {
-                                                        userkey: item.key
-                                                    });
-                                                }}/>
-                                                </Right>
-                                                </ListItem>
-                                            </List>
-
-                                            </Card>
-                                        </ScrollView>
-                                    </SafeAreaView>
-                                )
-                            }}
-                        />
-                    </View>
-                       
-                        </Content>
-
-                    </Card>
-                   
-
-                    </Content>
-
-                    <Card>
-
-                        <Button block primary last style={{ marginTop: 20, marginBottom: 5 }} onPress={() => this.props.navigation.navigate('EditProfileJobCreator')}>
-                            <Text style={{ fontSize: 18, fontWeight: 'bold', fontFamily: 'montserrat' }}>Edit Profile</Text>
-                        </Button>
-
-                    </Card>
-
-                    </Container>
-                    
-
-                </ScrollView>
-
-            </View>
         )
     }
 }

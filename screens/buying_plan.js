@@ -17,7 +17,7 @@ import {
     Thumbnail,
     Text,
     Icon,
-    
+    Picker,    
     DatePicker,
     Footer,
     FooterTab,
@@ -28,51 +28,22 @@ import DateTimePickerModal from "react-native-modal-datetime-picker";
 import {db, auth, storage, firestore} from '../config/Firebase';
 import * as ImagePicker from 'expo-image-picker';
 import uuid from 'react-native-uuid';
-import ActionSheet from 'react-native-actionsheet'
-
-const dataArray = [
-    { title: "Personal Bio", content: "Smart, Simple, Hardworking and Easy to adapt" },
-    { title: "Skills", content: "Programming, Engineering, Mechanical, Design" },
-    { title: "Experience", content: "Working with Creative World, Worked With Brandpacker Solution" },
-    { title: "Personal Projects", content: "Develop app for ESports, Develop personal e-wallet app" },
-    { title: "Education Background", content: "UITM, UIAM, Oracle Academy" },
-    { title: "Interest", content: "Love to coding, loves science" },
-    { title: "Achievement", content: "3 times Deans's list award" }
-];
-
-
-
-const quantity = [
-    'Cancel',
-    <Text style={{ color: 'blue', fontSize: 15, fontWeight: 'bold', fontFamily: 'montserrat' }}>Kilogram</Text>,
-    <Text style={{ color: 'blue', fontSize: 15, fontWeight: 'bold', fontFamily: 'montserrat' }}>Gram</Text>,
-    <Text style={{ color: 'blue', fontSize: 15, fontWeight: 'bold', fontFamily: 'montserrat' }}>Miligram</Text>,
-]
-
-const alert = [
-    'Cancel',
-    <Text style={{ color: 'blue', fontSize: 15, fontWeight: 'bold', fontFamily: 'montserrat' }}>Kilogram</Text>,
-    <Text style={{ color: 'blue', fontSize: 15, fontWeight: 'bold', fontFamily: 'montserrat' }}>Gram</Text>,
-    <Text style={{ color: 'blue', fontSize: 15, fontWeight: 'bold', fontFamily: 'montserrat' }}>Miligram</Text>,
-]
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 
 const SIZE = 80;
 //const storageRef = storage().ref('thumbnails_job').child(`${appendIDToImage}`);
-
-// [anas]
-
 
 export default class BuyingPlan extends Component {
     constructor() {
         super();
 
         //const user = firebase.auth().currentUser;
-        this.dbRef = firestore.collection('Job_list');
+        this.plannerRef = firestore.collection('Planner');
         this.state = {
             currentUser: null,
             userID: null,
-            jobname: '',
+            itemname: '',
             email:'',
             uniqueId: '',
             jobdesc: '',
@@ -83,16 +54,14 @@ export default class BuyingPlan extends Component {
             qualification:'',
             ingredientname:'',
             quantity:'',
+            buyPeople:[],
             alert:'',
             experience:'',
             isLoading: false,
             uploading: false,
             DateDisplay:'',
             visibility: false
-            //chosenDate: new Date(),
-            //date_start: new Date().toString().substr(4, 12),
-            //switchValue: false  
-            //modalVisible: false
+
         };
         this.setDate_Start = this.setDate_Start.bind(this);
 
@@ -108,20 +77,13 @@ export default class BuyingPlan extends Component {
         // this.setState({ userid: user })
 
     }
-    componentDidMount() {
-        //get data first
-        var user = auth.currentUser;
-        var name, uid;
-        if (user != null) {
-            name = user.displayName;
-            uid = user.uid;
-        }
 
-        const { currentUser } = auth;
-        this.setState({ currentUser });
-        this.state.userID = currentUser.uid;
-        this.setState({ jobCreaterName: currentUser.displayName })  
+    onUserSelected(value) {
+        this.setState({
+          buyPeople: value
+        });
       }
+
 
     handleConfirm=(date)=>{
         this.setState({DateDisplay:date.toUTCString()})
@@ -136,34 +98,6 @@ export default class BuyingPlan extends Component {
     }
 
 
-    showActionSheet = () => {
-        this.ActionSheet.show()
-    }
-
-    showActionSheetalert = () => {
-        this.ActionSheet.show()
-    }
-
-    handlePressquantity = buttonIndex => {
-        this.setState({
-          selected: buttonIndex,
-          quantity: quantity[buttonIndex]
-          
-        });
-        console.log('actionsheet:',buttonIndex);
-
-      };
-      
-
-      handlePressalert = buttonIndex => {
-        this.setState({
-          selected: buttonIndex,
-          alert: alert[buttonIndex]
-          
-        });
-        console.log('actionsheet5',buttonIndex);
-
-      };
  
     toggleView = () => {
         Animated.timing(this.mode, {
@@ -181,6 +115,10 @@ export default class BuyingPlan extends Component {
     setEmail = (value) => {
         this.setState({ email: value });
 
+    }
+
+    setItemName = (value) => {
+        this.setState({itemname: value});
     }
 
 
@@ -333,38 +271,28 @@ export default class BuyingPlan extends Component {
 
     saveData = async() => {
         console.log("state", this.state)
-        if (this.state.userID && this.state.worktype && this.state.qualification && this.state.experience && this.state.email&& this.state.jobname && this.state.uniqueId && this.state.jobdesc && this.state.salary && this.state.peoplenum  && this.state.url) {
+        if (this.state.userID && this.state.itemname && this.state.DateDisplay && this.state.buyPeople && this.state.url) {
             if (isNaN(this.state.salary && this.state.peoplenum)) {
                 Alert.alert('Status', 'Invalid Figure!');
             }
             else {
                 //await auth.currentUser.uid.then(doc =>{
                     
-                    this.dbRef.add({
+                    this.plannerRef.add({
                         uid: auth.currentUser.uid,
-                        jobCreatorname: this.state.email,
-                        jobname: this.state.jobname,
-                        uniqueId: this.state.uniqueId,
-                        jobdesc: this.state.jobdesc,
-                        salary: this.state.salary,
+                        itemname: this.state.itemname,
+                        date_to_buy: this.state.DateDisplay,
+                        people_inCharge: this.state.buyPeople,
                         url: this.state.url,
-                        worktype: this.state.worktype,
-                        experience: this.state.experience,
-                        qualification: this.state.qualification,
-                        peoplenum: this.state.peoplenum,
                         
                     }).then((res) => {
                         console.log("[saveData] Done add to firebase", res);
 
                         this.setState({
-                            jobname: '',
-                            uniqueId: '',
-                            jobdesc: '',
-                            salary: '',
-                            url: '',
-                            peoplenum: '',
-                            time: 0,
-                        
+                            itemname,
+                            date_to_buy,
+                            people_inCharge,
+                            url 
                         })
                     });
                     Alert.alert('Your Job Has Been Posted', 'Please Choose',
@@ -403,8 +331,26 @@ export default class BuyingPlan extends Component {
 
                     <Item style={styles.inputGroup} fixedLabel last>
                             <Label>Things to Buy</Label>
-                            <Input  keyboardType="numeric" style={styles.startRouteBtn} onChangeText={this.setSalary} />
+                            <Input style={styles.startRouteBtn} onChangeText={this.setItemName} />
                         </Item>
+
+                        <View style={{marginBottom: 20, flexDirection: 'row', justifyContent: 'center' }}>
+                                <Button iconLef style={{ backgroundColor: '#1B6951', padding: 2, margin: 3, width: 150}} onPress={this.pickImage}>
+                                    <Icon name="md-image" />
+                                        <Text style={{ textAlign: 'center', color: 'white', fontWeight: 'bold' }}>Library</Text>
+                                </Button>
+                                
+                                <Button iconLef style={{ backgroundColor: '#2869F4', padding: 2, margin: 3 }}
+                                                    onPress={this._takePhoto}>
+                                    <Icon name="md-camera" />
+                                        <Text style={{ textAlign: 'center', color: 'white', fontWeight: 'bold'}}>Take Photo</Text>
+                                </Button>
+                            </View>
+
+
+                            {this._maybeRenderImage()}
+                            {this._maybeRenderUploadingOverlay()}
+
 
                     <Item style={styles.inputGroup} fixedLabel last onPress={this.onPressButtonClick}>
                     <DateTimePickerModal
@@ -428,7 +374,26 @@ export default class BuyingPlan extends Component {
 
                         <Item style={styles.inputGroup} fixedLabel last>
                             <Label>Who Will Buy</Label>
-                            <Input keyboardType="numeric" style={styles.startRouteBtn} onChangeText={this.setPeopleNum} />
+                            <Form>
+                                <Picker
+                                    style={{ width: 200, height: 40 }}
+                                    iosHeader="Branch"
+                                    Header="User"
+                                    mode="dropdown"
+                                    textStyle={{ color: 'grey' }}
+                                    placeholder='Select User'
+                                    headerBackButtonText='Geri'
+                                    selectedValue={this.state.buyPeople}
+                                    onValueChange={(value) => this.onUserSelected(value)}
+                                    >
+                                    {this.state.buyPeople.map((buyPeople, i) => {
+                                        return (
+                                        <Picker.Item label={buyPeople.fullname} value={buyPeople.fullnam} key={i} />
+                                        );
+                                    }
+                                    )}
+                                    </Picker>
+                         </Form>
                         </Item>
 
                     

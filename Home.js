@@ -9,7 +9,7 @@ import PostFood from './screens/post_food';
 import { Ionicons } from '@expo/vector-icons';
 import BuyingPlan from './screens/buying_plan';
 import Account from './screens/account';
-
+import Profile from './screens/profile';
 
 export default function Home() {
     return (
@@ -33,9 +33,9 @@ export default function Home() {
                   color={color}
                 />
               );
-            } else if (route.name === 'EmployerProfile'){
+            } else if (route.name === 'Profile'){
               <Ionicons
-                  name={'md-albums'}
+                  name={'md-person'}
                   size={size}
                   color={color}
                 />
@@ -54,7 +54,7 @@ export default function Home() {
           <Tab.Screen name="Feed" component={Feed} /> 
           <Tab.Screen name="PostFood" component={PostFood} />
           <Tab.Screen name="BuyingPlan" component={BuyingPlan} />
-          <Tab.Screen name="Account" component={Account} />
+          <Tab.Screen name="Profile" component={Profile} />
         </Tab.Navigator>
      
     );
