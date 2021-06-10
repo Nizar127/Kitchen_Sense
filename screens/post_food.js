@@ -57,7 +57,7 @@ export default class PostFood extends Component {
         super();
 
         //const user = firebase.auth().currentUser;
-        this.dbRef = firestore.collection('Job_list');
+        this.dbRef = firestore.collection('IngredientList');
         this.state = {
             currentUser: null,
             userID: null,
@@ -101,21 +101,6 @@ export default class PostFood extends Component {
         this.setState({
           selectedMetric: value
         });
-      }
-
-    componentDidMount() {
-        //get data first
-        var user = auth.currentUser;
-        var name, uid;
-        if (user != null) {
-            name = user.displayName;
-            uid = user.uid;
-        }
-
-        const { currentUser } = auth;
-        this.setState({ currentUser });
-        this.state.userID = currentUser.uid;
-        this.setState({ jobCreaterName: currentUser.displayName })  
       }
 
 
@@ -184,11 +169,19 @@ export default class PostFood extends Component {
 
     }
 
+    //to ensure data is here is less than quantity
+    setAlert = (value) =>{
+        if(this.state.alert <= this.setQuantity){
+            this.setState({
+                alert: value
+            })
+        }else{
+            Alert.alert("You Have To Input Number Less Than Quantity")
+        }
+    }
+    setQuantity = (value) => {
+        this.setState({ quantity: value });
 
-    selectWorkType = (value) => {
-        this.setState({
-            worktype: value
-        })
     }
 
     setQualification = (value) => {
@@ -337,7 +330,6 @@ export default class PostFood extends Component {
                         ingredientname: this.state.ingredientname,
                         ingredientDesc: this.state.ingredientDesc,
                         quantity: this.state.quantity,
-                        qtyMetric: this.state.selected1,
                         date_bought: this.state.DateDisplay,
                         ExpiryReceived: this.state.switchValue,
                         alert: this.state.alert,
@@ -451,13 +443,13 @@ export default class PostFood extends Component {
 
     
                         <Item>
-                             <Label>Quantity</Label>
-                             <Input keyboardType="numeric" style={styles.startRouteBtn} onChangeText={this.setPeopleNum} />
+                             <Label>Quantity (in gram)</Label>
+                             <Input keyboardType="numeric" style={styles.startRouteBtn} onChangeText={this.setQuantity} />
                              <Text>{this.state.quantity}</Text>
                         </Item> 
-                        <Item style={{marginTop: 30, marginBottom:10, marginLeft:2, marginRight:10}}  >  
+                        <Item>  
 
-                    <Form>
+                 {/*    <Form>
                         <Picker
                             style={{ width: 200, height: 40 }}
                             iosHeader="Branch"
@@ -476,19 +468,19 @@ export default class PostFood extends Component {
                             }
                             )}
                             </Picker>
-                    </Form>
+                    </Form> */}
                             
                         </Item>  
 
-                        <Input>{this.state.quantity}{this.handlePressQuantity}</Input>       
+                        {/* <Input>{this.state.quantity}{this.handlePressQuantity}</Input>        */}
 
                         <Item>
-                             <Label>Alert When Below</Label>
-                             <Input keyboardType="numeric" style={styles.startRouteBtn} onChangeText={this.setPeopleNum} />
+                             <Label>Alert When Below (in gram)</Label>
+                             <Input keyboardType="numeric" style={styles.startRouteBtn} onChangeText={this.setAlert} />
                              <Text>{this.state.alert}</Text>
                         </Item> 
                         <Item style={{marginTop: 30, marginBottom:10, marginLeft:2, marginRight:10}}  >  
-                        <Button style={{ borderRadius: 40, marginRight: 10, elevation: 12 }} onPress={this.showActionSheetalert}>
+{/*                         <Button style={{ borderRadius: 40, marginRight: 10, elevation: 12 }} onPress={this.showActionSheetalert}>
                                 <ActionSheet
                                     ref={o => this.ActionSheet = o}
                                     title={<Text style={{ color: '#000', fontSize: 18 }}>Which one do you like?</Text>}
@@ -498,11 +490,11 @@ export default class PostFood extends Component {
                                     selectedValue={this.state.alert}
                                     value={this.state.alert}
                                     onPress={this.handlePressalert}
-                                    //onPress={(index) => { /* do something */ }}
+                                   
                                 />
                                 <Text style={{ fontWeight: "bold", fontSize: 10, padding: 10 }}>Choose Metric</Text>
 
-                            </Button>
+                            </Button> */}
                         </Item>  
 
 

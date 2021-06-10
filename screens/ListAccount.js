@@ -30,20 +30,17 @@ import { useRoute } from '@react-navigation/native';
 import { Alert } from 'react-native';
 
 console.disableYellowBox = true;
- /* export default function(props) {
+ export default function(props) {
     const route = useRoute();
   
     return <ListAccount {...props} route={route} />;
-  }  */
+  }  
   
- export default class ListAccount extends Component {
+ class ListAccount extends Component {
 
     constructor() {
         super();
-        //const {route} = this.props;
-
-        //firebase.firestore().collection('Users').doc(user.uid).set(user).collection('Job_Creator');
-        this.accountRef = firestore.collection('Users')/* .where('address', '==', route.params.items) */;
+        
         this.state = {
             users: [],
             username: '',
@@ -69,13 +66,16 @@ console.disableYellowBox = true;
             editedItem: 0,
 
         };
+        
 
     }
 
 
     componentDidMount() {
+        const {route} = this.props;
+        this.accountRef = firestore.collection('Users').where('address', '==', route.params.myaddress);
         this.unsubscribe = this.accountRef.onSnapshot(this.getCollection);
-      
+        console.log("route",route.params.myaddress);
     }
 
 
@@ -111,6 +111,7 @@ console.disableYellowBox = true;
             users,
             isLoading: false
         })
+        console.log("flatlist",this.state.users)
     }
 
     setModalVisible = (bool) => {
@@ -160,49 +161,8 @@ console.disableYellowBox = true;
         this.setState({ myText: value })
     }
 
-
-
-
-
-    componentWillUnmount() {
-        this.unsubscribe();
-    }
-
-    getCollection = (querySnapshot) => {
-        const usersNow = [];
-       
-        querySnapshot.forEach((res) => {
-            const {
-                userID,
-                address,
-                fullname,
-                email,
-                url,
-                phoneNum,
-                description,
-            } = res.data();
-            usersNow.push({
-                key: res.id,
-                res,
-                userID,
-                address,
-                fullname,
-                email,
-                url,
-                phoneNum,
-                description,
-            });
-            console.log('user',usersNow);
-        });
-        this.setState({
-            usersNow,
-            isLoading: false
-        })
-    }
-
-
-
     render() {
+        const{route} = this.props;
         return (
             <View style={{ flex: 1 }}>
                 <ScrollView>
@@ -211,10 +171,18 @@ console.disableYellowBox = true;
                             <Card>
                             <Content>
                                 <View>
-                                    <Text style={{ flex: 1, fontSize: 15, textAlign: 'center', margin: 5}}>Manage Your Household</Text>
+                                    <Text style={{ flex: 1, fontSize: 15, textAlign: 'center', margin: 5}}>dsManage Your Household</Text>
                                 </View>
+
                                 <View style={{margin: 10}}>
                                     <Text style={{ flex: 1, fontSize: 15, textAlign: 'center', margin: 5}}>List of People on This House</Text>
+                                    <View style={{flex: 1, flexDirection:'row'}}>
+                                       <Left>
+                                           <Icon name="md-location"/>
+                                       </Left>
+                                        <Text style={{ flex: 1, fontSize: 15, textAlign: 'center', margin: 5}}>{route.params.myaddress}</Text>
+
+                                    </View>
                                     <Text note style={{ flex: 1, fontSize: 15, textAlign: 'center', margin: 5}}>You can add or remove user</Text>
                                 </View>
                             </Content>
@@ -222,7 +190,7 @@ console.disableYellowBox = true;
                             <Container>
                                 <Content>
                            
-                                <View style={{ height: 400,backgroundColor: '#242836', margin:5, padding: 7 }}>
+                                <View style={{ height: 400,backgroundColor: '#242836', margin:5 }}>
                                  
                                   <FlatList
                                         data={this.state.users}
@@ -231,27 +199,23 @@ console.disableYellowBox = true;
                                             return (
                                                  <SafeAreaView>
                                                     <ScrollView>
-                                                        <Card key={index} style={styles.card} onPress={() => {
+                                                        <List style={{backgroundColor: '#fff', marginTop:5}} key={index} onPress={() => {
                                                           this.props.navigation.navigate('AccountDetail', {
                                                                 userkey: item.key
                                                           });
                                                         }}>
-                                                        <List>
-                                                            <ListItem avatar>
+                                                            <ListItem>
+                                                                
                                                             <Left>
-                                                                <Thumbnail source={{ uri: this.state.url  }} style={{ height: 200, width: 200, flex: 1 }} />
-                                                            </Left>
-                                                            <Body>
-                                                                <Text>{item.fullname}</Text>
-                                                                <Icon name="md-location"/><Text note>Household</Text>
-                                                            </Body>
-                                                            <Right>
-                                                                <Icon name="arrow-forward"/>
-                                                            </Right>
-                                                            </ListItem>
-                                                        </List>
+                                                                 <Thumbnail large source={{ uri: item.url  }} />
 
-                                                        </Card>
+                                                            </Left>
+                                                         
+                                                                        <Body>
+                                                                            <Text>{item.fullname}</Text>
+                                                                        </Body>
+                                                            </ListItem>
+                                                        </List>                                                     
                                                     </ScrollView>
                                                </SafeAreaView>
                                             )

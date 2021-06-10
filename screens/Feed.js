@@ -46,7 +46,7 @@ import MyLocation from '../location/location';
     constructor() {
         super();
         this.state = {
-            hire: [],
+            food: [],
             isLoading: true,
             show: true,
             username: null,
@@ -113,43 +113,33 @@ import MyLocation from '../location/location';
 
    
     getCollection = (querySnapshot) => {
-        const hire = [];
+        const food = [];
         querySnapshot.forEach((res) => {
             const {
-                userID,
-                jobCreatorID,
-                jobCreatorName,
-                jobDescription,
-                jobName,
-                jobWorkType,
-                job_seekerImage,
-                job_seeker_name,
-                job_seekerSalary,
-                jobExperience,
-                job_qualification,
-                ref_skills,
-                ref_selfDescribe,
+                uid,
+                ingredientname,
+                ingredientDesc,
+                quantity,
+                date_bought,
+                ExpiryReceived,
+                alert,
+                url
             } = res.data();
-            hire.push({
+            food.push({
                 key: res.id,
                 res,
-                userID,
-                jobCreatorID,
-                jobCreatorName,
-                jobDescription,
-                jobName,
-                jobWorkType,
-                job_seekerImage,
-                job_seeker_name,
-                job_seekerSalary,
-                jobExperience,
-                job_qualification,
-                ref_skills,
-                ref_selfDescribe,
+                uid,
+                ingredientname,
+                ingredientDesc,
+                quantity,
+                date_bought,
+                ExpiryReceived,
+                alert,
+                url
             });
         });
         this.setState({
-            hire,
+            food,
             isLoading: false
         })
     }
@@ -295,45 +285,6 @@ import MyLocation from '../location/location';
                             
                             </View>  
                     </View>
-                    
-                            
-                        
-                    <Modal
-                        animationType={"slide"}
-                        transparent={false}
-                        visible={this.state.isVisible}
-                        onRequestClose={() => {
-                            Alert.alert('Modal has now been closed.');
-                        }}>
-                        <ScrollView>
-                            <KeyboardAvoidingView
-                                behavior={Platform.OS === "ios" ? "padding" : null}
-                                style={{ flex: 1 }}>
-                                <View style={Style.inner}>
-
-
-                                    <Item style={Style.inputGroup} fixedLabel last>
-                                        <Label>Task To Do</Label>
-                                        <Textarea rowSpan={3} bordered onChangeText={this.setTask} style={Style.startTextBtn} placeholder="Tell something about the job Here" />
-                                    </Item>
-
-
-                                    <Text
-                                        style={Style.closeText}
-                                        onPress={() => {
-                                            this.displayModal(!this.state.isVisible);
-                                        }}><Icon name="md-close" size={20} />
-                                    </Text>
-
-                                    <Button success  onPress={() => this.HireWorking(this.state.key)}>
-                                        <Text>Submit</Text>
-                                    </Button>
-                                    <View style={{ flex: 1 }}></View>
-                                </View>
-
-                            </KeyboardAvoidingView>
-                        </ScrollView>
-                    </Modal>
                     <View style={{ flex: 1, /* backgroundColor: '#292D5C' */ shadowColor: 'white', backgroundColor: '#242836' }}>
                         <FlatList
                             data={this.state.hire}                              
@@ -347,22 +298,19 @@ import MyLocation from '../location/location';
                                             <Card key={index} style={Style.card} >
                                                 <CardItem header bordered style={{ flexDirection: 'row' }}>
                                                     <Text>{item.ingredientname}</Text>
-                                                    <Right>
-                                                        <Button success onPress={() => { this.setState({ key: item.key }), this.displayModal(true) }}>
-                                                             <Text style={Style.buttonHireText}>Hire</Text>
-                                                        </Button>
-                                                    </Right>
-
                                                 </CardItem>
-                                                <CardItem header>
-                                                    <View style={{ flex: 1, flexDirection:'row'}}>
-                                                        <Text>{item.quantity}</Text>
-                                                        <Text>{item.qtyMetric}</Text>
-                                                    </View>
-                                                    
-
+                                                <CarItem>
+                                                    <Thumbnail source={{uri: item.url}}/>
+                                                </CarItem>
+                                                <CardItem>
+                                                    <Body>
+                                                        <View style={{ flex: 1, flexDirection:'row'}}>
+                                                            <Text>{item.quantity}</Text>
+                                                            <Text>gram</Text>
+                                                        </View>
+                                                    </Body>
                                                 </CardItem>
-                                                <CardItem style={{flex: 1, flexDirection: 'column'}}>
+                                                <CardItem style={{flex: 1, margin: 7,  flexDirection: 'column'}}>
                                                     <Body>
                                                         <Right>
                                                             <Text>
@@ -375,26 +323,6 @@ import MyLocation from '../location/location';
                                                             {item.alert}
                                                         </Text>
                                                     </Body>
-                                                </CardItem>
-                                                <CardItem bordered button onPress={() => {
-                                                    this.props.navigation.navigate('JobCreatorDetail', {
-                                                        userkey: item.key
-                                                    });
-                                                }}>
-                                                    <CardItem cardBody style={{ flexDirection: 'row' }}>
-                                                        <Left>
-                                                            <Thumbnail large source={{ uri: item.url }} style={{ margin: 5 }} />
-                                                        </Left>
-                                                        <Body>
-                                                        <Text style={{ paddingBottom: 7, margin: 10 }}>{item.ingredientDesc}</Text>
-                                                            <Text style={{ paddingBottom: 7 }}>Capability</Text>
-                                                            <Text note style={{ padding: 3 }}>{item.ref_skills}</Text>
-                                                            <Text style={{ padding: 3 }}>{item.ref_selfDescribe}</Text>
-                                                        </Body>
-
-                                                    </CardItem>
-
-
                                                 </CardItem>
                                             </Card>
                                             </View>
@@ -418,7 +346,7 @@ import MyLocation from '../location/location';
                      <Button style={{ width:60, height: 50,  backgroundColor: '#34A34F' }}   onPress={() => this.props.navigation.navigate('PostFood')}>
                         <Icon name="ios-add-circle-outline" style={{ color: '#ffffff', fontSize: 30}} />
                       </Button>
-                      <Button style={{ width:60, height: 50, backgroundColor: '#3B5998', marginBottom: 30, marginEnd: 30}} onPress={() => this.props.navigation.navigate('AddUser')}>
+                      <Button style={{ width:60, height: 50, backgroundColor: '#3B5998', marginBottom: 30, marginEnd: 30}} onPress={() => this.props.navigation.navigate('BuyingPlan')}>
                         <Icon name="person-add" style={{ color: '#ffffff', fontSize: 30}}/>
                       </Button>
                     

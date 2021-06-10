@@ -27,7 +27,7 @@ import MyLocation from './location/location';
 import UserStartLocation from './location/userStartLocation';
 import AccountDetail from './screens/accountDetail';
 import AddUserLocation from './location/adduserlocation';
-
+import BuyingPlan from './screens/buying_plan';
 
 
 function App() {
@@ -55,6 +55,7 @@ function App() {
         <Stack.Screen name="MyLocation" component={MyLocation}/>
         <Stack.Screen name="AccountDetail" component={AccountDetail}/>
         <Stack.Screen name="AddUserLocation" component={AddUserLocation}/>
+        <Stack.Screen name="BuyingPlan" component={BuyingPlan}/>
 
 
       </Stack.Navigator>
