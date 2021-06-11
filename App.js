@@ -21,10 +21,13 @@ import SplashScreen from './SplashScreen';
 import MyJob from './screens/MyJob';
 import MyOrderDetail from './screens/MyOrderDetail';
 import { useEffect } from 'react/cjs/react.development';
-import ListAccount from './screens/ListAccount';
+import Household from './screens/Household';
 import AddUser from './screens/AddUser';
-
-
+import MyLocation from './location/location';
+import UserStartLocation from './location/userStartLocation';
+import AccountDetail from './screens/accountDetail';
+import AddUserLocation from './location/adduserlocation';
+import BuyingPlan from './screens/buying_plan';
 
 
 function App() {
@@ -46,8 +49,14 @@ function App() {
         <Stack.Screen name="SignUp" component={SignUp} />
         <Stack.Screen name="EditProfileJobCreator" component={EditProfileJobCreator} />
         <Stack.Screen name="JobProgress" component={JobProgress}/> 
-        <Stack.Screen name="ListAccount" component={ListAccount}/>
+        <Stack.Screen name="Household" component={Household}/>
         <Stack.Screen name="AddUser" component={AddUser}/>
+        <Stack.Screen name="UserStartLocation" component={UserStartLocation}/>
+        <Stack.Screen name="MyLocation" component={MyLocation}/>
+        <Stack.Screen name="AccountDetail" component={AccountDetail}/>
+        <Stack.Screen name="AddUserLocation" component={AddUserLocation}/>
+        <Stack.Screen name="BuyingPlan" component={BuyingPlan}/>
+
 
       </Stack.Navigator>
 

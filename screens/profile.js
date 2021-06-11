@@ -157,7 +157,7 @@ export default class Profile extends Component {
                     <Card>
                     <CardItem header bordered >
                             <View style={{ flex: 1, marginStart: 10, marginBottom: 40 }}>                 
-                                <Button success style={{ position: 'absolute', top: 2, right: 20, bottom: 10}} onPress={() => this.props.navigation.navigate('ListAccount')}>
+                                <Button success style={{ position: 'absolute', top: 2, right: 20, bottom: 10}} onPress={() => this.props.navigation.navigate('Household')}>
                                     <Text>Manage Household User</Text>
                                 </Button>
                             

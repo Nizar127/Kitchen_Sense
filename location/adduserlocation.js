@@ -48,7 +48,7 @@ const AddUserLocation = ({ navigation }) => {
         setDisplayCurrentAddress(address);
         if (address.length > 0) {
             setTimeout(() => {
-              navigation.navigate('ListAccount', { myaddress: address });
+              navigation.navigate('Household', { myaddress: address });
              
             }, 2000);
           }

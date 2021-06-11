@@ -30,10 +30,11 @@ import {auth, firestore, storage} from '../config/Firebase';
 import { KeyboardAvoidingViewBase } from 'react-native';
 
 
-export default class Feed extends Component {
+export default class Home extends Component {
 
     constructor() {
         super();
+        //const network = React.useContext(NetworkContext);
         //this.applicationRef = firestore.collection('Hiring').where('jobCreatorID', '==', auth.currentUser.uid);
         //this.applicationRef = firestore().collection('Hiring');/* .doc(auth().currentUser.uid).get().where('jobCreatorID', '==', auth().currentUser.uid); */
         //this.hiringRef = firestore.collection('Job_Hired');

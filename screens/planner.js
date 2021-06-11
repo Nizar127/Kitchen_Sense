@@ -34,7 +34,7 @@ import DateTimePickerModal from "react-native-modal-datetime-picker";
 const SIZE = 80;
 //const storageRef = storage().ref('thumbnails_job').child(`${appendIDToImage}`);
 
-export default class BuyingPlan extends Component {
+export default class Planner extends Component {
     constructor() {
         super();
 

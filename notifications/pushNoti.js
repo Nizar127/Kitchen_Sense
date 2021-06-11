@@ -1,8 +1,9 @@
 import React from 'react';
 import { StyleSheet, Text, View, StatusBar} from 'react-native';
 import { Container, Content, Header, Form, Input, Item, Button, Label, Icon, List, ListItem } from 'native-base'
-
-import * as firebase from 'firebase';
+import * as Notifications from 'expo-notifications';
+import * as Permissions from 'expo-permissions';
+import {db, auth, storage, firestore} from '../config/Firebase';
 var data = []
 
 //import { Permissions, Notifications } from 'expo';
@@ -129,7 +130,9 @@ export default class App extends React.Component {
         // POST the token to our backend so we can use it to send pushes from there
         var updates = {}
         updates['/expoToken'] = token
-        await firebase.database().ref('/users/' + currentUser.uid).update(updates)
+        await firestore.collection("Users").doc(auth.currentUser.uid).update(updates)
+        //firestore.collection("Users").doc(doc.user.uid)
+        //await firebase.database().ref('/users/' + currentUser.uid).update(updates)
         //call the push notification 
     }
 

@@ -33,10 +33,10 @@ console.disableYellowBox = true;
  export default function(props) {
     const route = useRoute();
   
-    return <ListAccount {...props} route={route} />;
+    return <Household {...props} route={route} />;
   }  
   
- class ListAccount extends Component {
+ class Household extends Component {
 
     constructor() {
         super();

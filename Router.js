@@ -4,20 +4,23 @@ import { StyleSheet, Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import EmployerProfile from './screens/profile';
-import Feed from './screens/Feed';
+import Home from './screens/Feed';
 import PostFood from './screens/post_food';
 import { Ionicons } from '@expo/vector-icons';
-import BuyingPlan from './screens/buying_plan';
+import Planner from './screens/planner';
 import Account from './screens/account';
 import Profile from './screens/profile';
+import NetworkContext from './Context/context';
 
-export default function Home() {
-    return (
-     
+export default function Router() {
+  /* const{route}=this.props; */  
+  return (
+     /* <NetworkContext.Provider value={route.params.network}> */
+ 
         <Tab.Navigator
         screenOptions={({ route }) => ({
           tabBarIcon: ({  color, size }) => {
-            if (route.name === 'Feed') {
+            if (route.name === 'Home') {
               return (
                 <Ionicons
                   name={'md-home-outline'}
@@ -51,11 +54,11 @@ export default function Home() {
           activeTintColor: 'tomato',
           inactiveTintColor: 'gray',
         }}>
-          <Tab.Screen name="Feed" component={Feed} /> 
-          <Tab.Screen name="PostFood" component={PostFood} />
-          <Tab.Screen name="BuyingPlan" component={BuyingPlan} />
+          <Tab.Screen name="Home" component={Home} /> 
+          <Tab.Screen name="Planner" component={Planner} />
           <Tab.Screen name="Profile" component={Profile} />
         </Tab.Navigator>
+       /*  </NetworkContext.Provider> */
      
     );
   }
