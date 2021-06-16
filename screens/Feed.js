@@ -36,31 +36,28 @@ export default class Home extends Component {
         super();
         //const network = React.useContext(NetworkContext);
         //this.applicationRef = firestore.collection('Hiring').where('jobCreatorID', '==', auth.currentUser.uid);
-        //this.applicationRef = firestore().collection('Hiring');/* .doc(auth().currentUser.uid).get().where('jobCreatorID', '==', auth().currentUser.uid); */
+      /* .doc(auth().currentUser.uid).get().where('jobCreatorID', '==', auth().currentUser.uid); */
         //this.hiringRef = firestore.collection('Job_Hired');
 
         this.state = {
-            hire: [],
+            food: [],
             isLoading: true,
             show: true,
             username: null,
             jobname: null,
+            url: '',
+            ingredientDesc:'',
+            ingredientname:'',
+            quantity:'',
+            alert:'',
+            date_bought:'',
+            ExpiryReceived: '',
+            //uid:'',
             jobposition: null,
             isVisible: false,
             userID: '',
-            jobCreatorID: '',
-            jobCreatorName: '',
-            jobCreatorImage:'',
-            jobDescription: '',
-            jobName: '',
-            jobWorktype: '',
-            job_seekerImage: '',
-            job_seekerSalary: '',
             lat: '',
             lng: '',
-            ref_experienece: '',
-            ref_skills: '',
-            ref_selfDescribe: '',
             startDate: '',
             workingLocation: '',
             period: '',
@@ -68,11 +65,7 @@ export default class Home extends Component {
             time: '',
             worktime: '',
             fabActive:false,
-            //selectedHours: 0,
-            //selectedMinutes: 0,
-            //chosenDate: new Date(),
-            //date_start: new Date().toString().substr(4, 12),
-            //date_end: new Date().toString().substr(4, 12)
+            
         };
        // this.selectWorkTime = this.selectWorkTime.bind(this);
         //this.setDate_Start = this.setDate_Start.bind(this);
@@ -81,64 +74,67 @@ export default class Home extends Component {
     }
 
 
-    getDataOfJob = (documentSnapshot) => {
-        return documentSnapshot.get('jobCreatorID')
-    }
+
 
     componentDidMount() {
-        //this.unsubscribe = this.applicationRef.onSnapshot(this.getCollection);
-        //let DataRef = firestore().collection('Hiring').doc(auth().currentUser.uid).get().then(documentSnapshot => this.getDataOfJob(documentSnapshot));
+        this.feedRef = firestore.collection('IngredientList');
+        this.unsubscribe = this.feedRef.onSnapshot(this.getCollection);
 
 
-    }
-
+    } 
+/*     componentDidMount() {
+        this.unsubscribe = firestore.collection('IngredientList').doc(auth.currentUser.uid).onSnapshot(doc => {
+            console.log(doc);
+            const { url, date_bought, ingredientname, ingredientDesc, ExpiryReceived, alert, quantity} = doc.data();
+            this.setState({
+                email,
+                fullname,
+                description,
+                phoneNum,
+                url,
+                address,
+            })
+            console.log("doc", doc)
+        });
+      
+        //this.unsubscribe = firebase.firestore().collection('Users').onSnapshot(this.getCollection);
+    } */
 
     componentWillUnmount() {
-       // this.unsubscribe();
+        this.unsubscribe();
     }
 
     getCollection = (querySnapshot) => {
-        const hire = [];
+        const food = [];
         querySnapshot.forEach((res) => {
             const {
-                userID,
-                jobCreatorID,
-                jobCreatorName,
-                jobDescription,
-                jobName,
-                jobWorkType,
-                job_seekerImage,
-                job_seeker_name,
-                job_seekerSalary,
-                jobExperience,
-                job_qualification,
-                ref_skills,
-                ref_selfDescribe,
+                uid,
+                ingredientname,
+                ingredientDesc,
+                quantity,
+                date_bought,
+                ExpiryReceived,
+                alert,
+                url
             } = res.data();
-            hire.push({
+            food.push({
                 key: res.id,
                 res,
-                userID,
-                jobCreatorID,
-                jobCreatorName,
-                jobDescription,
-                jobName,
-                jobWorkType,
-                job_seekerImage,
-                job_seeker_name,
-                job_seekerSalary,
-                jobExperience,
-                job_qualification,
-                ref_skills,
-                ref_selfDescribe,
+                uid,
+                ingredientname,
+                ingredientDesc,
+                quantity,
+                date_bought,
+                ExpiryReceived,
+                alert,
+                url
             });
         });
         this.setState({
-            hire,
+            food,
             isLoading: false
         })
     }
-
     onCancel() {
         this.TimePicker.close();
     }
@@ -181,73 +177,6 @@ export default class Home extends Component {
 
     }
 
-
-
-    HireWorking = (id) => {
-        console.log("text_id", id);
-
-        let dbref = firestore.collection('Hiring').doc(id).get();
-        dbref.then(doc => {
-            this.setState({
-                ...this.state,
-                uid: doc.get('uid'),
-                //job_seeker_name: doc.get('username'),
-                jobSeekerName: doc.get('job_seeker_name'),
-                jobseekerID: doc.get('userID'),
-                jobDescription: doc.get('jobDescription'),
-                job_seekerImage: doc.get('job_seekerImage'),
-                jobname: doc.get('jobName'),
-                jobWorktype: doc.get('jobWorkType'),
-                job_seeker_salary: doc.get('job_seekerSalary'),
-                skills: doc.get('ref_skills'),
-                experience: doc.get('jobExperience'),
-                qualification: doc.get('job_qualification'),
-                selfDescribe: doc.get('ref_selfDescribe')
-            }, () => {
-
-                console.log("state", this.state)
-                console.log("auth.currentUser", auth.currentUser)
-
-
-
-                if (this.state.task) {
-
-                    this.hiringRef.add({
-                        jobCreatorID: auth.currentUser.uid,
-                        job_creator_name: auth.currentUser.email,
-                        job_creator_Image: this.state.jobCreatorImage,
-                        jobSeekerName: this.state.jobSeekerName,
-                        jobSeekerID: this.state.jobseekerID,
-                        jobDescription: this.state.jobDescription,
-                        job_seekerImage: this.state.job_seekerImage,
-                        jobName: this.state.jobname,
-                        job_seekerSalary: this.state.job_seeker_salary,
-                        type_of_Job: this.state.jobWorktype,
-                        task: this.state.task,
-
-                    }).then((res) => {
-                        this.setState({
-                            task: '',
-
-                        });
-                        Alert.alert('Congrats!', 'Your Application Has Been Send To The Job Seeker');
-                        this.displayModal(!this.state.isVisible);
-
-                    })
-
-                        .catch((err) => {
-                            console.error("Error found: ", err);
-                            // this.setState({
-                            //   isLoading: false,
-                            // });
-                        });
-                }
-            });
-
-        });
-
-    }
-
     render() {
 
         return (
@@ -255,87 +184,48 @@ export default class Home extends Component {
 
                 <Content >
                     <Text style={{ textAlign: "center", height: 40, fontWeight: "bold", marginTop: 20 }}>List of Ingredient</Text>
-                    <Modal
-                        animationType={"slide"}
-                        transparent={false}
-                        visible={this.state.isVisible}
-                        onRequestClose={() => {
-                            Alert.alert('Modal has now been closed.');
-                        }}>
-                        <ScrollView>
-                            <KeyboardAvoidingView
-                                behavior={Platform.OS === "ios" ? "padding" : null}
-                                style={{ flex: 1 }}>
-                                <View style={Style.inner}>
-
-
-                                    <Item style={Style.inputGroup} fixedLabel last>
-                                        <Label>Task To Do</Label>
-                                        <Textarea rowSpan={3} bordered onChangeText={this.setTask} style={Style.startTextBtn} placeholder="Tell something about the job Here" />
-                                    </Item>
-
-
-                                    <Text
-                                        style={Style.closeText}
-                                        onPress={() => {
-                                            this.displayModal(!this.state.isVisible);
-                                        }}><Icon name="md-close" size={20} />
-                                    </Text>
-
-                                    <Button success  onPress={() => this.HireWorking(this.state.key)}>
-                                        <Text>Submit</Text>
-                                    </Button>
-                                    <View style={{ flex: 1 }}></View>
-                                </View>
-
-                            </KeyboardAvoidingView>
-                        </ScrollView>
-                    </Modal>
                     <View style={{ flex: 1, /* backgroundColor: '#292D5C' */ shadowColor: 'white', backgroundColor: '#242836' }}>
-                        <FlatList
-                            data={this.state.hire}
-
-                            contentContainerStyle={{ flexGrow: 1 }}
+                    <FlatList
+                            data={this.state.food}                            
+                            contentContainerStyle={{ justifyContent:'space-around' }}
+                            numColumns={2}
                             renderItem={({ item, index }) => {
                                 return (
                                     <SafeAreaView>
                                         <ScrollView>
+                                            <View>
                                             <Card key={index} style={Style.card} >
                                                 <CardItem header bordered style={{ flexDirection: 'row' }}>
-                                                    <Text>{item.jobName}</Text>
-                                                    <Right>
-                                                        <Button success onPress={() => { this.setState({ key: item.key }), this.displayModal(true) }}>
-
-                                                            <Text style={Style.buttonHireText}>Hire</Text>
-                                                        </Button>
-                                                    </Right>
-
+                                                    <Text>{item.ingredientname}</Text>
                                                 </CardItem>
-                                                <CardItem header>
-                                                    <Text>{item.job_seeker_name}</Text>
-
+                                                <CardItem>
+                                                    <Thumbnail source={{uri: item.url}}/>
                                                 </CardItem>
-                                                <CardItem bordered button onPress={() => {
-                                                    this.props.navigation.navigate('JobCreatorDetail', {
-                                                        userkey: item.key
-                                                    });
-                                                }}>
-                                                    <CardItem cardBody style={{ flexDirection: 'row' }}>
-                                                        <Left>
-                                                            <Thumbnail large source={{ uri: item.job_seekerImage }} style={{ margin: 5 }} />
-                                                        </Left>
-                                                        <Body>
-                                                        <Text style={{ paddingBottom: 7, margin: 10 }}>{item.jobDescription}</Text>
-                                                            <Text style={{ paddingBottom: 7 }}>Capability</Text>
-                                                            <Text note style={{ padding: 3 }}>{item.ref_skills}</Text>
-                                                            <Text style={{ padding: 3 }}>{item.ref_selfDescribe}</Text>
-                                                        </Body>
-
-                                                    </CardItem>
-
-
+                                                <CardItem>
+                                                    <Body>
+                                                        <View style={{ flexDirection:'row', alignItems: 'center'}}>
+                                                            <Text style={{paddingEnd:10}}>{item.quantity}</Text>
+                                                            <Text>gram</Text>
+                                                        </View>
+                                                    </Body>
+                                                </CardItem>
+                                                <CardItem style={{margin: 7,  flexDirection: 'column'}}>
+                                                    <Body>
+                                                        <Right>
+                                                            <Text>
+                                                                {item.date_bought}
+                                                            </Text>
+                                                        </Right>
+                                                    </Body>
+                                                    <Body>
+                                                        <Text>
+                                                            {item.alert}
+                                                        </Text>
+                                                    </Body>
                                                 </CardItem>
                                             </Card>
+                                            </View>
+
                                         </ScrollView>
                                     </SafeAreaView>
                                 )
@@ -345,18 +235,17 @@ export default class Home extends Component {
 
                 </Content>
 
-
                 <Fab 
-                style={{ backgroundColor: '#031CDD', borderRadius: 50 }} 
+                style={{ backgroundColor: '#031CDD', borderRadius: 50, }} 
                 direction="up"
                 position="bottomRight"
                 onPress={() => this.setState({ active: !this.state.fabActive })}>
                 <Icon name="md-add-outline" />
-                     <Button style={{ backgroundColor: '#34A34F' }}  onPress={() => this.props.navigation.navigate('PostFood')}>
-                        <Icon name="md-add-outline" />
+                     <Button style={{ width:60, height: 50,  backgroundColor: '#34A34F' }}   onPress={() => this.props.navigation.navigate('PostFood')}>
+                        <Icon name="ios-add-circle-outline" style={{ color: '#ffffff', fontSize: 30}} />
                       </Button>
-                      <Button style={{ backgroundColor: '#3B5998' }} onPress={() => this.props.navigation.navigate('AddUser')}>
-                        <Icon name="bag-handle-outline" />
+                      <Button style={{ width:60, height: 50, backgroundColor: '#3B5998', marginBottom: 30, marginEnd: 30}} onPress={() => this.props.navigation.navigate('PlanLocation')}>
+                        <Icon name="person-add" style={{ color: '#ffffff', fontSize: 30}}/>
                       </Button>
                     
 
@@ -401,13 +290,12 @@ const Style = StyleSheet.create({
 
     },
     card: {
-        flex: 1,
+        alignItems:'center',
         elevation: 15,
-        borderRadius: 30,
-        marginTop: 20,
-        marginBottom: 20,
-        marginLeft: 10,
-        marginRight: 10
+        margin: 10,
+        padding:10, 
+        maxWidth:200, 
+        
     },
     text: {
         fontSize: 20,

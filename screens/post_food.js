@@ -18,6 +18,7 @@ import {
     Text,
     Icon,
     Picker,
+    Badge,
     DatePicker,
     Footer,
     FooterTab,
@@ -85,8 +86,8 @@ export default class PostFood extends Component {
         this.setDate_Start = this.setDate_Start.bind(this);
 
         //this.setDate = this.setDate.bind(this);
-        this.selectWorkType = this.selectWorkType.bind(this);
-        this.selectExperience = this.selectExperience.bind(this);
+        //this.selectWorkType = this.selectWorkType.bind(this);
+        //this.selectExperience = this.selectExperience.bind(this);
         this.pickImage = this.pickImage.bind(this);
 
         this.saveData = this.saveData.bind(this);
@@ -96,6 +97,21 @@ export default class PostFood extends Component {
         // this.setState({ userid: user })
 
     }
+
+    componentDidMount() {
+        //get data first
+        var user = auth.currentUser;
+        var name, uid;
+        if (user != null) {
+            name = user.displayName;
+            uid = user.uid;
+        }
+
+        const { currentUser } = auth;
+        this.setState({ currentUser });
+        this.state.userID = currentUser.uid;
+        this.setState({ jobCreaterName: currentUser.displayName })  
+      }
 
     onMetricSelected(value) {
         this.setState({
@@ -169,6 +185,10 @@ export default class PostFood extends Component {
 
     }
 
+    setTheAlert = (value) => {
+        this.setState({alert: value});
+    }
+
     //to ensure data is here is less than quantity
     setAlert = (value) =>{
         if(this.state.alert <= this.setQuantity){
@@ -176,23 +196,24 @@ export default class PostFood extends Component {
                 alert: value
             })
         }else{
-            Alert.alert("You Have To Input Number Less Than Quantity")
+            this.renderErrorAlert();        
+            // Alert.alert("You Have To Input Number Less Than Quantity")
         }
+    }
+
+    renderErrorAlert = () =>{
+        let textInput = this.state.alert;
+        textInput.push(
+        <View style={{ flexDirection: 'row', margin: 5 }}>
+        <Badge danger>
+            <Icon name="star" style={{ fontSize: 15, color: "#fff", lineHeight: 20 }}/>
+        </Badge>
+    </View>
+        );
     }
     setQuantity = (value) => {
         this.setState({ quantity: value });
 
-    }
-
-    setQualification = (value) => {
-        this.setState({ qualification: value })
-        //console.log('job desc:',value);
-    }
-
-    selectExperience = (value) => {
-        this.setState({
-            experience: value
-        })
     }
 
     setIngredientName = (value) =>{
@@ -343,12 +364,11 @@ export default class PostFood extends Component {
                             ingredientname: '',
                             ingredientDesc: '',
                             quantity: '',
-                            qtyMetric: '',
                             date_bought:'',
                             ExpiryReceived:'',
                             url: '',
                             alert:'',
-                            url:''
+                        
                         
                         })
                     });
@@ -447,37 +467,16 @@ export default class PostFood extends Component {
                              <Input keyboardType="numeric" style={styles.startRouteBtn} onChangeText={this.setQuantity} />
                              <Text>{this.state.quantity}</Text>
                         </Item> 
-                        <Item>  
-
-                 {/*    <Form>
-                        <Picker
-                            style={{ width: 200, height: 40 }}
-                            iosHeader="Branch"
-                            Header="Metric"
-                            mode="dropdown"
-                            textStyle={{ color: 'grey' }}
-                            placeholder='Select Metric'
-                            headerBackButtonText='Geri'
-                            selectedValue={this.state.selectedMetric}
-                            onValueChange={(value) => this.onMetricSelected(value)}
-                            >
-                            {this.state.metric.map((metric, i) => {
-                                return (
-                                <Picker.Item label={metric.gram} value={metric.id} key={i} />
-                                );
-                            }
-                            )}
-                            </Picker>
-                    </Form> */}
-                            
+                        <Item>                  
+                           
                         </Item>  
 
-                        {/* <Input>{this.state.quantity}{this.handlePressQuantity}</Input>        */}
 
                         <Item>
                              <Label>Alert When Below (in gram)</Label>
-                             <Input keyboardType="numeric" style={styles.startRouteBtn} onChangeText={this.setAlert} />
+                             <Input keyboardType="numeric" style={styles.startRouteBtn} onChangeText={this.setTheAlert} />
                              <Text>{this.state.alert}</Text>
+                            
                         </Item> 
                         <Item style={{marginTop: 30, marginBottom:10, marginLeft:2, marginRight:10}}  >  
 {/*                         <Button style={{ borderRadius: 40, marginRight: 10, elevation: 12 }} onPress={this.showActionSheetalert}>

@@ -1,5 +1,6 @@
+import React, { Component } from 'react';
 import 'react-native-gesture-handler';
-import React from 'react';
+
 import { useFonts } from '@use-expo/font';
 import { AppLoading } from 'expo';
 import {Container, Button} from 'native-base';
@@ -10,7 +11,8 @@ import EmployerProfile from './screens/profile'
 import PostFood from './screens/post_food'
 import ViewJob from './screens/Feed'
 import JobProgress from './screens/job_status'
-import Home from './Home'
+//import Home from './Home'
+import Router from './Router';
 import Login from './Auth/Login'
 import SignUp from './Auth/SignUp'
 import JobCreatorDetail from './screens/JobCreatorDetail'
@@ -25,10 +27,10 @@ import Household from './screens/Household';
 import AddUser from './screens/AddUser';
 import MyLocation from './location/location';
 import UserStartLocation from './location/userStartLocation';
-import AccountDetail from './screens/accountDetail';
+import AccountDetail from './screens/AccountDetail';
 import AddUserLocation from './location/adduserlocation';
-import BuyingPlan from './screens/buying_plan';
-
+import Planner from './screens/planner';
+import PlanLocation from './location/PlanLocation';
 
 function App() {
 
@@ -37,7 +39,8 @@ function App() {
       <Stack.Navigator>
         <Stack.Screen name="splashscreen" component={SplashScreen}/>
         <Stack.Screen name="Login" component={Login} />
-        <Stack.Screen name="Home" component={Home}/>
+        <Stack.Screen name="Router" component={Router} />
+        {/* <Stack.Screen name="Home" component={Home}/> */}
         <Stack.Screen name="ViewJob" component={ViewJob} />
         <Stack.Screen name="MyJob" component={MyJob} />
         <Stack.Screen name="MyOrderDetail" component={MyOrderDetail} />
@@ -55,7 +58,8 @@ function App() {
         <Stack.Screen name="MyLocation" component={MyLocation}/>
         <Stack.Screen name="AccountDetail" component={AccountDetail}/>
         <Stack.Screen name="AddUserLocation" component={AddUserLocation}/>
-        <Stack.Screen name="BuyingPlan" component={BuyingPlan}/>
+        <Stack.Screen name="Planner" component={Planner}/>
+        <Stack.Screen name="PlanLocation" component={PlanLocation}/>
 
 
       </Stack.Navigator>

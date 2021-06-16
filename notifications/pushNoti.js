@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {Component} from 'react';
 import { StyleSheet, Text, View, StatusBar} from 'react-native';
 import { Container, Content, Header, Form, Input, Item, Button, Label, Icon, List, ListItem } from 'native-base'
 import * as Notifications from 'expo-notifications';
@@ -8,7 +8,7 @@ var data = []
 
 //import { Permissions, Notifications } from 'expo';
 
-export default class App extends React.Component {
+export default class PushNoti extends Component {
 
 
     static navigationOptions = {

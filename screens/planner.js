@@ -28,13 +28,20 @@ import DateTimePickerModal from "react-native-modal-datetime-picker";
 import {db, auth, storage, firestore} from '../config/Firebase';
 import * as ImagePicker from 'expo-image-picker';
 import uuid from 'react-native-uuid';
-import DateTimePickerModal from "react-native-modal-datetime-picker";
+import { useRoute } from '@react-navigation/native';
+
 
 
 const SIZE = 80;
 //const storageRef = storage().ref('thumbnails_job').child(`${appendIDToImage}`);
+export default function(props) {
+    const route = useRoute();
+  
+    return <Planner {...props} route={route} />;
+  }  
+  
 
-export default class Planner extends Component {
+ class Planner extends Component {
     constructor() {
         super();
 
@@ -43,6 +50,7 @@ export default class Planner extends Component {
         this.state = {
             currentUser: null,
             userID: null,
+            username:'',
             itemname: '',
             email:'',
             uniqueId: '',
@@ -55,33 +63,93 @@ export default class Planner extends Component {
             ingredientname:'',
             quantity:'',
             buyPeople:[],
+            People:'',
             alert:'',
             experience:'',
             isLoading: false,
             uploading: false,
             DateDisplay:'',
-            visibility: false
+            visibility: false,
 
         };
         this.setDate_Start = this.setDate_Start.bind(this);
 
-        //this.setDate = this.setDate.bind(this);
-        this.selectWorkType = this.selectWorkType.bind(this);
-        this.selectExperience = this.selectExperience.bind(this);
+;
         this.pickImage = this.pickImage.bind(this);
-
+        this.onUserSelected = this.onUserSelected.bind(this);
         this.saveData = this.saveData.bind(this);
-        // state = { ScaleAnimation: false };
 
-        //this.state.date = this.state.chosenDate.toString().substr(4, 12);
-        // this.setState({ userid: user })
+
 
     }
 
+    componentDidMount() {
+        const {route} = this.props;
+        this.peopleRef = firestore.collection('Users').where('address', '==', route.params.planLocate);;
+        this.unsubscribe = this.peopleRef.onSnapshot(this.getCollection);
+        console.log("testing data:", this.peopleRef);
+    
+        var user = auth.currentUser;
+        var name, uid;
+        if (user != null) {
+            name = user.displayName;
+            uid = user.uid;
+        }
+
+        const { currentUser } = auth;
+        this.setState({ currentUser });
+        this.state.userID = currentUser.uid;
+        //this.setState({ jobCreaterName: currentUser.displayName })  
+    
+    }
+
+    componentWillUnmount(){
+        this.unsubscribe();
+    }
+
+    getCollection = (querySnapshot) => {
+        const buyPeople = [];
+        querySnapshot.forEach((res) => {
+            const {
+                userID,
+                email,
+                fullname,
+                address,
+                description,
+                url,
+                phoneNum,
+            } = res.data();
+            buyPeople.push({
+                key: res.id,
+                res,
+                userID,
+                email,
+                fullname,
+                address,
+                description,
+                url,
+                phoneNum,
+            });
+        });
+        this.setState({
+            buyPeople,
+            isLoading: false
+        })
+        console.log("flatlist",this.state.buyPeople)
+    }
+
+    
+/*     onMetricSelected(value) {
+        this.setState({
+          selectedMetric: value
+        });
+      } */
+
     onUserSelected(value) {
         this.setState({
-          buyPeople: value
+          People: value
         });
+        console.log('value_people', value)
       }
 
 
@@ -122,22 +190,6 @@ export default class Planner extends Component {
     }
 
 
-    selectWorkType = (value) => {
-        this.setState({
-            worktype: value
-        })
-    }
-
-    setQualification = (value) => {
-        this.setState({ qualification: value })
-        //console.log('job desc:',value);
-    }
-
-    selectExperience = (value) => {
-        this.setState({
-            experience: value
-        })
-    }
 
     setIngredientName = (value) =>{
         this.setState({ ingredientname: value})
@@ -156,10 +208,6 @@ export default class Planner extends Component {
         //console.log('job desc:',value);
     }
 
-
-    setSalary = (value) => {
-        this.setState({ salary: value })
-    }
 
     setPeopleNum = (value) => {
         this.setState({ peoplenum: value })
@@ -271,7 +319,13 @@ export default class Planner extends Component {
 
     saveData = async() => {
         console.log("state", this.state)
-        if (this.state.userID && this.state.itemname && this.state.DateDisplay && this.state.buyPeople && this.state.url) {
+        console.log("usedID", this.state.userID)
+        console.log("itemname", this.state.itemname)
+        console.log("date", this.state.DateDisplay)
+        console.log("people", this.state.People)
+        console.log("url", this.state.url)
+
+        if (this.state.userID && this.state.itemname && this.state.DateDisplay && this.state.People && this.state.url) {
             if (isNaN(this.state.salary && this.state.peoplenum)) {
                 Alert.alert('Status', 'Invalid Figure!');
             }
@@ -282,7 +336,9 @@ export default class Planner extends Component {
                         uid: auth.currentUser.uid,
                         itemname: this.state.itemname,
                         date_to_buy: this.state.DateDisplay,
-                        people_inCharge: this.state.buyPeople,
+                        //people_inCharge: this.state.buyPeople,
+                        people_inCharge: this.state.People,
+                        //people: this.state.selectedMetric,
                         url: this.state.url,
                         
                     }).then((res) => {
@@ -299,11 +355,11 @@ export default class Planner extends Component {
                         [
                             {
                                 text: "Return To Main Screen",
-                                onPress: () => this.props.navigation.navigate('Feed')
+                                onPress: () => this.props.navigation.navigate('Home')
                             },
                             {
                                 text: "View Current Job Posted",
-                                onPress: () => this.props.navigation.navigate('MyJob')
+                                onPress: () => this.props.navigation.navigate('Profile')
                             }
                         ], { cancelable: false }
                     );
@@ -384,16 +440,26 @@ export default class Planner extends Component {
                                     placeholder='Select User'
                                     headerBackButtonText='Geri'
                                     selectedValue={this.state.buyPeople}
+                                  /*   onValueChange ={(itemValue, itemIndex) =>  
+                                     {
+                                         return(
+                                            <Picker.Item label={itemValue.fullname} value={itemValue.fullname} key={itemIndex} />
+
+                                         )
+                                     }} */
                                     onValueChange={(value) => this.onUserSelected(value)}
                                     >
-                                    {this.state.buyPeople.map((buyPeople, i) => {
+                                  {this.state.buyPeople.map((buyPeople, i) => {
                                         return (
-                                        <Picker.Item label={buyPeople.fullname} value={buyPeople.fullnam} key={i} />
+                                        <Picker.Item label={buyPeople.fullname} value={buyPeople.fullname} key={i} />
                                         );
                                     }
-                                    )}
+                                )} 
                                     </Picker>
-                         </Form>
+                                    
+                         </Form> 
+                         
+                  
                         </Item>
 
                     

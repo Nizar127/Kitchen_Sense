@@ -10,12 +10,15 @@ import { Ionicons } from '@expo/vector-icons';
 import Planner from './screens/planner';
 import Account from './screens/account';
 import Profile from './screens/profile';
-import NetworkContext from './Context/context';
+import Planning from './screens/Planning';
+//import NetworkContext from './Context/context';
+//import {useRoute} from '@react-navigation/native';
+
 
 export default function Router() {
-  /* const{route}=this.props; */  
+   //getconst addressPass = useRoute();
   return (
-     /* <NetworkContext.Provider value={route.params.network}> */
+     /*  <NetworkContext.Provider value={addressPass.params.network}>  */
  
         <Tab.Navigator
         screenOptions={({ route }) => ({
@@ -55,10 +58,10 @@ export default function Router() {
           inactiveTintColor: 'gray',
         }}>
           <Tab.Screen name="Home" component={Home} /> 
-          <Tab.Screen name="Planner" component={Planner} />
+          <Tab.Screen name="Planning" component={Planning} />
           <Tab.Screen name="Profile" component={Profile} />
         </Tab.Navigator>
-       /*  </NetworkContext.Provider> */
+       /*  </NetworkContext.Provider>  */
      
     );
   }

@@ -25,7 +25,7 @@ exports.sendPushNotification = functions.firestore.ref('Household').onCreate(eve
             messages.push({
                 "to": expoToken,
                 "sound": "default",
-                "body": "New Note Added"
+                "body": "Hi"
             });
         });
         //firebase.database then() respved a single promise that resolves

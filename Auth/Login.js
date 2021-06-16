@@ -70,7 +70,7 @@ loginUser = () => {
         auth.signInWithEmailAndPassword(this.state.email, this.state.password).then(function (user) {
             
         })
-        this.props.navigation.navigate('Home');
+        this.props.navigation.navigate('Router');
 
     }
     catch (error) {
